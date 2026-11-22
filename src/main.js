@@ -40,9 +40,11 @@ function revealCards() {
 
 async function showData() {
   const { event, contact, stands } = await loadData(undefined, bundled);
-  renderEvent($('#event-line'), event);
-  renderStands($('#stands'), stands, { onRetry: showData });
-  renderContact($('#contact'), contact);
+  // each section on its own: a bad field in one never blanks the others
+  const safely = (fn) => { try { fn(); } catch (err) { console.error(err); } };
+  safely(() => renderEvent($('#event-line'), event));
+  safely(() => renderStands($('#stands'), stands, { onRetry: showData }));
+  safely(() => renderContact($('#contact'), contact));
   revealCards();
   ScrollTrigger.refresh();
 }

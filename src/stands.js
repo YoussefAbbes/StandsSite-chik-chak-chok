@@ -68,13 +68,13 @@ export function renderStands(container, stands, { onRetry } = {}) {
  *  line lets the bidi algorithm reorder the pieces ("2 20 · 2026 ديسمبر h"). */
 export function renderEvent(container, event) {
   if (!event) return;
-  const chip = (name, text) => el('li', {}, [icon(name), el('bdi', { text })]);
+  const chip = (name, text) => el('li', {}, [icon(name), el('bdi', { text: String(text ?? '') })]);
   const map = safeHttpsUrl(event.mapUrl);
   const place = map
     ? el('li', {}, [
         el('a', { class: 'event-map', href: map, ...external, 'aria-label': `${event.place} — ouvrir dans Maps` }, [
           icon('pin'),
-          el('bdi', { text: event.place }),
+          el('bdi', { text: String(event.place ?? '') }),
         ]),
       ])
     : chip('pin', event.place);
@@ -84,7 +84,7 @@ export function renderEvent(container, event) {
 export function renderContact(container, contact) {
   container.replaceChildren();
   if (!contact) return;
-  const phones = (contact.phones ?? []).map(normalizePhone).filter(Boolean);
+  const phones = (Array.isArray(contact.phones) ? contact.phones : []).map(normalizePhone).filter(Boolean);
   const mailto = safeMailto(contact.email);
   const socials = [
     [contact.instagramCommittee, '@comite_des_etudiants_esprit'],
@@ -104,7 +104,7 @@ export function renderContact(container, contact) {
             icon('mail'),
             el('span', { class: 'mail-text' }, [
               el('span', { class: 'mail-label', text: 'Envoyer un mail' }),
-              el('span', { class: 'mail-address', text: contact.email.trim() }),
+              el('span', { class: 'mail-address', text: String(contact.email).trim() }),
             ]),
           ])
         : null,

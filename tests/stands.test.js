@@ -132,3 +132,15 @@ describe('link safety', () => {
   });
 
 });
+
+describe('render functions tolerate malformed data', () => {
+  it('renderContact with wrong types still renders what is valid', () => {
+    expect(() => renderContact(root, { email: 42, phones: '95195235', instagramEvent: 7 })).not.toThrow();
+    expect(root.querySelector('a[href^="mailto:"]')).toBeNull();
+    expect(root.querySelector('.section-title')).not.toBeNull();
+  });
+
+  it('renderEvent with missing fields does not throw', () => {
+    expect(() => renderEvent(root, { date: 5 })).not.toThrow();
+  });
+});

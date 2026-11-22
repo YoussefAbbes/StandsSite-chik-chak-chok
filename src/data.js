@@ -18,19 +18,20 @@ export function normalizePhone(raw) {
 
 const blocKey = (name) => name.trim().replace(/\s+/g, ' ').toLowerCase();
 
-/** Keeps every bloc (each one has a stand), merges duplicates, filters people. */
+/** Keeps every bloc (each one has a stand), merges duplicates, filters people.
+ *  Entries of the wrong type are skipped, never thrown on (data.json is hand-edited). */
 export function normalizeStands(raw) {
   const byKey = new Map();
-  for (const entry of raw?.stands ?? []) {
-    if (!entry?.bloc?.trim()) continue;
+  const entries = Array.isArray(raw?.stands) ? raw.stands : [];
+  for (const entry of entries) {
+    if (typeof entry?.bloc !== 'string' || !entry.bloc.trim()) continue;
     const key = blocKey(entry.bloc);
-    if (!byKey.has(key)) {
-      byKey.set(key, { bloc: entry.bloc.trim(), people: [], ...(entry.note ? { note: entry.note } : {}) });
-    }
+    const note = typeof entry.note === 'string' && entry.note.trim() ? entry.note : undefined;
+    if (!byKey.has(key)) byKey.set(key, { bloc: entry.bloc.trim(), people: [], ...(note ? { note } : {}) });
     const stand = byKey.get(key);
-    if (entry.note && !stand.note) stand.note = entry.note;
-    for (const person of entry.people ?? []) {
-      const name = String(person?.name ?? '').trim();
+    if (note && !stand.note) stand.note = note;
+    for (const person of Array.isArray(entry.people) ? entry.people : []) {
+      const name = typeof person?.name === 'string' ? person.name.trim() : '';
       const phone = normalizePhone(person?.phone);
       if (name && phone && !PLACEHOLDER.test(name)) stand.people.push({ name, phone });
     }
@@ -86,7 +87,8 @@ export function validateData(raw) {
   return errors;
 }
 
-const shape = (raw) => ({ event: raw.event, contact: raw.contact, stands: normalizeStands(raw) });
+const objOrNull = (v) => (v !== null && typeof v === 'object' && !Array.isArray(v) ? v : null);
+const shape = (raw) => ({ event: objOrNull(raw?.event), contact: objOrNull(raw?.contact), stands: normalizeStands(raw) });
 
 /**
  * Fetches data.json fresh (no stale cache after an edit). On a bad network it

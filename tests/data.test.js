@@ -63,3 +63,38 @@ describe('loadData', () => {
     }
   });
 });
+
+describe('malformed data.json never crashes the page', () => {
+  it('normalizeStands skips entries of the wrong type', () => {
+    const s = normalizeStands({ stands: [
+      { bloc: 5 },
+      null,
+      'Bloc Z',
+      { bloc: 'Bloc X', people: { name: 'A', phone: '22222222' } },
+      { bloc: 'Bloc Y', note: 42, people: [null, 'x', { name: 7, phone: '22222222' }, { name: 'Ok', phone: 22222222 }] },
+    ] });
+    expect(s.map((x) => x.bloc)).toEqual(['Bloc X', 'Bloc Y']);
+    expect(s[0].people).toEqual([]);
+    expect(s[1].people.map((p) => p.name)).toEqual(['Ok']);
+    expect(s[1].note).toBeUndefined();
+  });
+
+  it('normalizeStands accepts stands that is not a list', () => {
+    expect(normalizeStands({ stands: {} })).toEqual([]);
+    expect(normalizeStands(null)).toEqual([]);
+  });
+
+  it('loadData resolves even when the bundled copy is malformed', async () => {
+    const { loadData } = await import('../src/data.js');
+    const original = globalThis.fetch;
+    globalThis.fetch = () => Promise.reject(new Error('offline'));
+    try {
+      const data = await loadData('/data.json', { stands: 'oops', contact: 3, event: [] });
+      expect(data.stands).toEqual([]);
+      expect(data.contact).toBeNull();
+      expect(data.event).toBeNull();
+    } finally {
+      globalThis.fetch = original;
+    }
+  });
+});
