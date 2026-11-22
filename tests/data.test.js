@@ -19,7 +19,8 @@ describe('normalizeStands', () => {
     const s = normalizeStands(file);
     expect(names(s, 'Bloc H')).toEqual(['Hiba Ghrandi']);
     expect(names(s, 'Bloc IJK & M')).toEqual(['Mohamed Nour Amri', 'Heni Troudi']);
-    for (const b of ['Bloc G', 'Bloc ESB', 'Bloc M']) expect(names(s, b)).toEqual([]);
+    for (const b of ['Bloc G', 'Bloc ESB', 'Bloc A']) expect(names(s, b)).toEqual([]);
+    expect(names(s, 'Bloc M')).toEqual(['Mohamed Nour Amri', 'Heni Troudi']);
   });
 
   it('drops placeholder names', () => {
@@ -32,8 +33,8 @@ describe('normalizeStands', () => {
 
   it('keeps every bloc', () => {
     const s = normalizeStands(file);
-    expect(s.map((x) => x.bloc)).toEqual(['Bloc G', 'Bloc ESB', 'Bloc H', 'Bloc IJK & M', 'Bloc M', 'Bloc A']);
-    expect(s.find((x) => x.bloc === 'Bloc A').note).toBe('شبّاك التذاكر dans le bureau du comité des étudiants');
+    expect(s.map((x) => x.bloc)).toEqual(['Bloc A', 'Bloc G', 'Bloc ESB', 'Bloc H', 'Bloc IJK & M', 'Bloc M']);
+    expect(s.filter((x) => x.stand).map((x) => x.bloc)).toEqual(['Bloc A', 'Bloc G', 'Bloc ESB']);
   });
 
   it('merges duplicate blocs', () => {

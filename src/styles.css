@@ -390,6 +390,12 @@ main, footer {
   color: var(--gold-light);
 }
 
+.badge-contact {
+  color: var(--cream);
+  border-color: rgba(255, 246, 230, 0.45);
+}
+.stand-card.is-contact .bulbs { opacity: 0.45; }
+
 .stand-hint {
   margin: 8px 0 4px;
   font-family: var(--font-party);

@@ -14,11 +14,39 @@ beforeEach(() => {
 });
 
 describe('renderStands', () => {
-  it('renders one card per bloc', () => {
+  it('renders one card per bloc, stands first', () => {
     renderStands(root, stands);
-    const cards = root.querySelectorAll('.stand-card');
-    expect(cards).toHaveLength(6);
-    for (const c of cards) expect(c.textContent).toContain('Tickets');
+    const names = [...root.querySelectorAll('.stand-name')].map((n) => n.textContent);
+    expect(names).toEqual(['Bloc A', 'Bloc G', 'Bloc ESB', 'Bloc H', 'Bloc IJK & M', 'Bloc M']);
+  });
+
+  it('only stand blocs get the stand badge and the stand hint', () => {
+    renderStands(root, stands);
+    for (const b of ['Bloc A', 'Bloc G', 'Bloc ESB']) {
+      const c = card(root, b);
+      expect(c.querySelector('.stand-badge').textContent).toBe('Stand + Tickets');
+      expect(c.querySelector('.stand-hint').textContent).toBe('Passe au stand — l’équipe est là 💃');
+      expect(c.classList.contains('is-stand')).toBe(true);
+    }
+    for (const b of ['Bloc H', 'Bloc IJK & M', 'Bloc M']) {
+      const c = card(root, b);
+      expect(c.querySelector('.stand-badge').textContent).toBe('Contact');
+      expect(c.querySelector('.stand-hint')).toBeNull();
+      expect(c.textContent).not.toContain('Tickets');
+    }
+  });
+
+  it('Bloc M lists its two responsables with call buttons', () => {
+    renderStands(root, stands);
+    const m = card(root, 'Bloc M');
+    expect([...m.querySelectorAll('.person-name')].map((n) => n.textContent)).toEqual(['Mohamed Nour Amri', 'Heni Troudi']);
+    expect(m.querySelector('a[href="tel:+21658431239"]')).not.toBeNull();
+    expect(m.querySelector('a[href="tel:+21622628105"]')).not.toBeNull();
+  });
+
+  it('hides a bloc with no stand and no reachable person', () => {
+    renderStands(root, [{ bloc: 'Bloc Z', stand: false, people: [] }, { bloc: 'Bloc A', stand: true, people: [] }]);
+    expect([...root.querySelectorAll('.stand-name')].map((n) => n.textContent)).toEqual(['Bloc A']);
   });
 
   it('renders a call button per person and no whatsapp', () => {
@@ -46,9 +74,14 @@ describe('renderStands', () => {
     expect(card(root, 'Bloc G').querySelector('a[href^="tel:"]')).toBeNull();
   });
 
-  it('shows the bloc note', () => {
+  it('stand cards show only the stand hint text (no note)', () => {
     renderStands(root, stands);
-    expect(card(root, 'Bloc A').textContent).toContain('شبّاك التذاكر dans le bureau du comité des étudiants');
+    expect(card(root, 'Bloc A').querySelector('.stand-note')).toBeNull();
+  });
+
+  it('still shows a note when data.json has one', () => {
+    renderStands(root, [{ bloc: 'Bloc X', stand: true, note: 'Info', people: [] }]);
+    expect(root.querySelector('.stand-note').textContent).toBe('Info');
   });
 
   it('does not interpret names as HTML', () => {

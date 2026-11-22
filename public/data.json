@@ -18,7 +18,13 @@
   },
   "stands": [
     {
+      "bloc": "Bloc A",
+      "stand": true,
+      "people": []
+    },
+    {
       "bloc": "Bloc G",
+      "stand": true,
       "people": [
         {
           "name": "Hamma",
@@ -32,6 +38,7 @@
     },
     {
       "bloc": "Bloc ESB",
+      "stand": true,
       "people": [
         {
           "name": "Youusef Abbes",
@@ -41,6 +48,7 @@
     },
     {
       "bloc": "Bloc H",
+      "stand": false,
       "people": [
         {
           "name": "Hiba Ghrandi",
@@ -54,6 +62,7 @@
     },
     {
       "bloc": "Bloc IJK & M",
+      "stand": false,
       "people": [
         {
           "name": "Mohamed Nour Amri",
@@ -67,21 +76,17 @@
     },
     {
       "bloc": "Bloc M",
+      "stand": false,
       "people": [
         {
-          "name": "Responsable 1",
-          "phone": ""
+          "name": "Mohamed Nour Amri",
+          "phone": "58431239"
         },
         {
-          "name": "Responsable 2",
-          "phone": ""
+          "name": "Heni Troudi",
+          "phone": "22628105"
         }
       ]
-    },
-    {
-      "bloc": "Bloc A",
-      "note": "شبّاك التذاكر dans le bureau du comité des étudiants",
-      "people": []
     }
   ]
 }

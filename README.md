@@ -19,7 +19,11 @@ Live: https://youssefabbes.github.io/students_committee_chikchakchok/
 3. Click **Commit changes**. The site updates by itself in about 1–2 minutes.
    The QR code never changes.
 
-To add a bloc, copy one `{ "bloc": …, "people": [ … ] }` block and keep the commas between blocks.
+- `"stand": true` = this bloc has a stand (tickets): the card shows **Stand + Tickets** and
+  "Passe au stand — l'équipe est là 💃". `"stand": false` = no stand: the card only shows the people to call
+  (and is hidden if nobody has a number).
+
+To add a bloc, copy one `{ "bloc": …, "stand": …, "people": [ … ] }` block and keep the commas between blocks.
 If the update fails, the **Actions** tab shows a red ✗: open it and look at the
 **Check data.json** step. It says exactly what to fix, for example
 `stand #3 (Bloc H), person #1: "name" must be text` or the line of a missing comma.

@@ -22,3 +22,11 @@ describe('hero tagline', () => {
     expect(html).not.toContain('An Oriental Celebration');
   });
 });
+
+describe('tickets tagline', () => {
+  it('says tickets are available at the stands', () => {
+    const lines = [...doc.querySelectorAll('#hero .tagline')].map((p) => p.textContent.trim());
+    expect(lines).toContain('Les tickets sont disponibles dans les stands');
+    expect(html).not.toContain('Chaque bloc a son stand');
+  });
+});

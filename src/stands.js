@@ -36,15 +36,17 @@ function personRow({ name, phone }) {
 }
 
 function standCard(stand, index) {
-  const body = stand.people.length
-    ? el('ul', { class: 'people' }, stand.people.map(personRow))
-    : el('p', { class: 'stand-hint', text: 'Passe au stand — l’équipe est là 💃' });
-  return el('article', { class: 'stand-card', style: { '--i': String(index) } }, [
+  // a bloc with a physical stand (tickets) vs a bloc that only has people to call
+  const badge = stand.stand
+    ? el('span', { class: 'stand-badge' }, [icon('ticket'), el('span', { text: 'Stand + Tickets' })])
+    : el('span', { class: 'stand-badge badge-contact' }, [icon('phone'), el('span', { text: 'Contact' })]);
+  return el('article', { class: `stand-card ${stand.stand ? 'is-stand' : 'is-contact'}`, style: { '--i': String(index) } }, [
     el('div', { class: 'bulbs', 'aria-hidden': 'true' }),
-    el('span', { class: 'stand-badge' }, [icon('ticket'), el('span', { text: 'Stand + Tickets' })]),
+    badge,
     el('h3', { class: 'stand-name', text: stand.bloc }),
     stand.note ? el('p', { class: 'stand-note', text: stand.note }) : null,
-    body,
+    stand.stand ? el('p', { class: 'stand-hint', text: 'Passe au stand — l’équipe est là 💃' }) : null,
+    stand.people.length ? el('ul', { class: 'people' }, stand.people.map(personRow)) : null,
   ]);
 }
 
@@ -61,7 +63,8 @@ export function renderStands(container, stands, { onRetry } = {}) {
     );
     return;
   }
-  container.append(...stands.map(standCard));
+  // a bloc without a stand and without anyone to call has nothing to show
+  container.append(...stands.filter((s) => s.stand || s.people.length).map(standCard));
 }
 
 /** Date / time / place as separate <bdi> chips: mixing Arabic and Latin in one

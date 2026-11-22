@@ -27,8 +27,9 @@ export function normalizeStands(raw) {
     if (typeof entry?.bloc !== 'string' || !entry.bloc.trim()) continue;
     const key = blocKey(entry.bloc);
     const note = typeof entry.note === 'string' && entry.note.trim() ? entry.note : undefined;
-    if (!byKey.has(key)) byKey.set(key, { bloc: entry.bloc.trim(), people: [], ...(note ? { note } : {}) });
+    if (!byKey.has(key)) byKey.set(key, { bloc: entry.bloc.trim(), stand: false, people: [], ...(note ? { note } : {}) });
     const stand = byKey.get(key);
+    if (entry.stand === true) stand.stand = true; // "stand": true = there is a physical stand (tickets) in this bloc
     if (note && !stand.note) stand.note = note;
     for (const person of Array.isArray(entry.people) ? entry.people : []) {
       const name = typeof person?.name === 'string' ? person.name.trim() : '';
@@ -59,6 +60,7 @@ export function validateData(raw) {
       if (!isText(stand.bloc) || !stand.bloc.trim()) return errors.push(`${at}: "bloc" must be text`);
       const where = `${at} (${stand.bloc.trim()})`;
       if (stand.note !== undefined && !isText(stand.note)) errors.push(`${where}: "note" must be text`);
+      if (stand.stand !== undefined && typeof stand.stand !== 'boolean') errors.push(`${where}: "stand" must be true or false`);
       if (stand.people === undefined) return;
       if (!Array.isArray(stand.people)) return errors.push(`${where}: "people" ${LIST}`);
       stand.people.forEach((p, j) => {
