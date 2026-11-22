@@ -38,14 +38,19 @@ export function normalizeStands(raw) {
   return [...byKey.values()];
 }
 
-/** Fetches data.json fresh (no stale cache after an edit). stands = null when offline. */
-export async function loadData(url = `${import.meta.env.BASE_URL}data.json`) {
+const shape = (raw) => ({ event: raw.event, contact: raw.contact, stands: normalizeStands(raw) });
+
+/**
+ * Fetches data.json fresh (no stale cache after an edit). On a bad network it
+ * falls back to the copy bundled at build time (identical at deploy time);
+ * with no fallback, everything is null and the page shows a retry.
+ */
+export async function loadData(url = `${import.meta.env.BASE_URL}data.json`, fallback = null) {
   try {
     const res = await fetch(`${url}?v=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw = await res.json();
-    return { event: raw.event, contact: raw.contact, stands: normalizeStands(raw) };
+    return shape(await res.json());
   } catch {
-    return { event: null, contact: null, stands: null };
+    return fallback ? shape(fallback) : { event: null, contact: null, stands: null };
   }
 }

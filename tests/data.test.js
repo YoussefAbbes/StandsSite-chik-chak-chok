@@ -46,3 +46,20 @@ describe('normalizeStands', () => {
     expect(names(s, 'Bloc G')).toEqual(['A', 'B']);
   });
 });
+
+describe('loadData', () => {
+  it('falls back to the bundled copy when the network fails', async () => {
+    const { loadData } = await import('../src/data.js');
+    const original = globalThis.fetch;
+    globalThis.fetch = () => Promise.reject(new Error('offline'));
+    try {
+      const data = await loadData('/data.json', file);
+      expect(data.contact.email).toBe('Comite.deseleves@Esprit.tn');
+      expect(data.stands.map((s) => s.bloc)).toContain('Bloc H');
+      const none = await loadData('/data.json');
+      expect(none.stands).toBeNull();
+    } finally {
+      globalThis.fetch = original;
+    }
+  });
+});
