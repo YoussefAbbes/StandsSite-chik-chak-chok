@@ -12,7 +12,6 @@ export function normalizePhone(raw) {
   return {
     display: `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5)}`,
     tel: `tel:+216${digits}`,
-    wa: `https://wa.me/216${digits}`,
   };
 }
 

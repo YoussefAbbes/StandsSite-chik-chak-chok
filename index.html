@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@500;700&family=Poppins:wght@400;600;700&family=Cinzel:wght@500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@500;700&family=Poppins:wght@400;600;700&family=Cinzel:wght@500&family=Rakkas&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -29,14 +29,14 @@
           </h1>
           <p class="tagline-en">An Oriental Celebration</p>
           <ul class="event-chips" id="event-line">
-            <li><span aria-hidden="true">📅</span><bdi>2 ديسمبر 2026</bdi></li>
-            <li><span aria-hidden="true">🕗</span><bdi>20h</bdi></li>
-            <li><span aria-hidden="true">📍</span><bdi>ESPRIT Bloc E</bdi></li>
+            <li><i data-icon="calendar"></i><bdi>2 ديسمبر 2026</bdi></li>
+            <li><i data-icon="clock"></i><bdi>20h</bdi></li>
+            <li><i data-icon="pin"></i><bdi>ESPRIT Bloc E</bdi></li>
           </ul>
         </div>
         <div class="taglines">
-          <p class="tagline">Chaque bloc a son stand — les tickets sont là-bas 🎟️</p>
-          <p class="tagline tagline-music">Check the blocs, follow the music 🎶</p>
+          <p class="tagline"><i data-icon="ticket"></i> Chaque bloc a son stand — les tickets sont là-bas</p>
+          <p class="tagline tagline-music"><i data-icon="music"></i> Check the blocs, follow the music <i data-icon="music"></i></p>
         </div>
         <a class="scroll-cue" href="#stands-section" aria-label="Voir les stands">⌄</a>
       </header>
@@ -54,10 +54,11 @@
 
     <footer>
       <img class="esprit-logo" src="./assets/esprit-light.png" alt="ESPRIT Student Committee" width="420" height="110" />
-      <p class="footer-note">Organisé par le Comité des étudiants ESPRIT · Shik Shak Shok 💃</p>
+      <p class="footer-note">Organisé par le Comité des étudiants ESPRIT · Shik Shak Shok</p>
+      <p class="credit">Made by <span>Youssef Abbes</span></p>
     </footer>
 
-    <button id="sound-toggle" class="sound-toggle" type="button" aria-label="Musique" hidden>🔊</button>
+    <button id="sound-toggle" class="sound-toggle" type="button" aria-label="Couper la musique" aria-pressed="true" hidden><i data-icon="soundOn"></i></button>
     <audio id="music" src="./assets/music.mp3" loop preload="none"></audio>
 
     <script type="module" src="/src/main.js"></script>

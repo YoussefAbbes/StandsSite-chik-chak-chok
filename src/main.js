@@ -4,8 +4,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import bundled from '../public/data.json';
 import { loadData } from './data.js';
 import { renderStands, renderContact, renderEvent } from './stands.js';
+import { hydrateIcons } from './icons.js';
 
 gsap.registerPlugin(ScrollTrigger);
+hydrateIcons();
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (sel) => document.querySelector(sel);

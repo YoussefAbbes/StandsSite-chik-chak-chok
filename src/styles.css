@@ -17,6 +17,7 @@
   --font-ar: 'Cairo', sans-serif;
   --font-latin: 'Poppins', system-ui, sans-serif;
   --font-deco: 'Cinzel', serif;
+  --font-party: 'Rakkas', 'Cairo', serif;
 }
 
 * { box-sizing: border-box; }
@@ -178,12 +179,13 @@ main, footer {
 .taglines { display: grid; gap: 8px; max-width: 560px; }
 .tagline {
   margin: 0;
-  font-weight: 600;
+  font-family: var(--font-party);
+  font-weight: 400;
+  line-height: 1.35;
   font-size: clamp(16px, 4.4vw, 20px);
   color: var(--text);
 }
 .tagline-music {
-  font-family: var(--font-deco);
   color: var(--gold);
   text-shadow: 0 0 14px rgba(242, 193, 91, 0.6);
   animation: beat 0.9s ease-in-out infinite;
@@ -223,8 +225,8 @@ main, footer {
   filter: drop-shadow(0 0 10px rgba(242, 193, 91, 0.35));
 }
 .section-title .fr {
-  font-family: var(--font-deco);
-  font-size: 13px;
+  font-family: var(--font-party);
+  font-size: 15px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--muted);
@@ -277,38 +279,45 @@ main, footer {
 }
 
 .stand-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-party);
   margin-top: 8px;
   padding: 4px 12px;
   border-radius: 999px;
   border: 1px solid rgba(242, 193, 91, 0.6);
   background: rgba(26, 4, 5, 0.55);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 400;
   letter-spacing: 0.04em;
   color: var(--gold-light);
 }
 
 .stand-name {
   margin: 10px 0 6px;
-  font-family: var(--font-deco);
-  font-size: clamp(24px, 6.4vw, 30px);
-  letter-spacing: 0.06em;
+  font-family: var(--font-party);
+  font-weight: 400;
+  font-size: clamp(28px, 8vw, 36px);
+  letter-spacing: 0.03em;
+  overflow-wrap: anywhere;
   color: var(--cream);
   text-shadow: 0 0 16px rgba(224, 38, 27, 0.9);
 }
 
 .stand-note {
   margin: 4px 0 6px;
-  font-family: var(--font-ar);
+  font-family: var(--font-ar), var(--font-latin);
   font-size: 15px;
+  line-height: 1.5;
   color: var(--gold-light);
 }
 
 .stand-hint {
   margin: 8px 0 4px;
-  color: var(--muted);
-  font-size: 15px;
+  font-family: var(--font-party);
+  color: var(--gold-light);
+  font-size: 18px;
 }
 
 .people {
@@ -330,15 +339,23 @@ main, footer {
   font-weight: 600;
   font-size: 17px;
   color: var(--cream);
+  overflow-wrap: anywhere;
 }
-.person-actions {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
+/* ---------- drawn icons ---------- */
+.icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.2em;
 }
-@media (min-width: 420px) {
-  .person-actions { grid-template-columns: 1.4fr 1fr; }
-}
+.icon .fill { fill: currentColor; stroke: none; }
+.tagline .icon { color: var(--gold); }
+.event-chips .icon { color: var(--gold); }
 
 /* ---------- buttons ---------- */
 .btn {
@@ -365,7 +382,7 @@ main, footer {
 }
 .btn-number { white-space: nowrap; font-size: 18px; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
 
-.btn-wa, .btn-mail, .btn-retry {
+.btn-mail, .btn-retry {
   color: var(--gold-light);
   background: rgba(26, 4, 5, 0.6);
   border: 1px solid var(--gold);
@@ -410,7 +427,7 @@ main, footer {
   text-decoration: none;
   padding: 6px 2px;
 }
-.social::before { content: '◎ '; }
+.social { display: inline-flex; align-items: center; gap: 6px; }
 
 /* ---------- footer ---------- */
 footer {
@@ -423,6 +440,13 @@ footer {
 }
 .esprit-logo { width: min(260px, 70vw); height: auto; }
 .footer-note { margin: 0; color: var(--muted); font-size: 13px; }
+.credit {
+  margin: 4px 0 0;
+  font-family: var(--font-party);
+  font-size: 15px;
+  color: var(--muted);
+}
+.credit span { color: var(--gold); }
 
 /* ---------- sound toggle ---------- */
 .sound-toggle {
@@ -436,7 +460,9 @@ footer {
   border: 1px solid var(--gold);
   background: rgba(26, 4, 5, 0.8);
   color: var(--gold-light);
-  font-size: 20px;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
   cursor: pointer;
   box-shadow: 0 0 20px rgba(242, 193, 91, 0.3);
 }
@@ -445,3 +471,5 @@ footer {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
 }
+
+.sound-toggle[hidden] { display: none; }

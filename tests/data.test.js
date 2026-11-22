@@ -6,7 +6,7 @@ const names = (stands, bloc) => stands.find((s) => s.bloc === bloc).people.map((
 
 describe('normalizePhone', () => {
   it('normalizes phone formats', () => {
-    const want = { display: '25 615 375', tel: 'tel:+21625615375', wa: 'https://wa.me/21625615375' };
+    const want = { display: '25 615 375', tel: 'tel:+21625615375' };
     for (const raw of ['25615375', '25 615 375', '+216 25.615.375', '0021625615375']) {
       expect(normalizePhone(raw)).toEqual(want);
     }
@@ -33,7 +33,7 @@ describe('normalizeStands', () => {
   it('keeps every bloc', () => {
     const s = normalizeStands(file);
     expect(s.map((x) => x.bloc)).toEqual(['Bloc G', 'Bloc ESB', 'Bloc H', 'Bloc IJK & M', 'Bloc M', 'Bloc A']);
-    expect(s.find((x) => x.bloc === 'Bloc A').note).toBe('Ay wehed f bureau — شبّاك التذاكر');
+    expect(s.find((x) => x.bloc === 'Bloc A').note).toBe('شبّاك التذاكر dans le bureau du comité des étudiants');
   });
 
   it('merges duplicate blocs', () => {
