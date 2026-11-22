@@ -12,6 +12,7 @@ function el(tag, props = {}, children = []) {
   for (const [key, value] of Object.entries(props)) {
     if (key === 'class') node.className = value;
     else if (key === 'text') node.textContent = value;
+    else if (key === 'style') for (const [prop, v] of Object.entries(value)) node.style.setProperty(prop, v);
     else node.setAttribute(key, value);
   }
   for (const child of [].concat(children)) if (child) node.append(child);
@@ -67,7 +68,7 @@ function buildScene(root, titleUrl) {
   const marquee = el('div', { class: 'marquee' }, [
     el('div', { class: 'halo' }),
     el('canvas', { class: 'silhouette', 'aria-hidden': 'true' }),
-    ...bulbPositions().map(([x, y]) => el('span', { class: 'bulb', style: `left:${x}%;top:${y}%` })),
+    ...bulbPositions().map(([x, y]) => el('span', { class: 'bulb', style: { left: `${x}%`, top: `${y}%` } })),
   ]);
   const enter = el('button', { id: 'enter', class: 'btn enter-btn', type: 'button', hidden: '' }, [
     icon('fan'),

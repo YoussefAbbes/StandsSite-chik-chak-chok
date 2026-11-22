@@ -112,3 +112,23 @@ describe('event map link', () => {
     expect(root.textContent).toContain('ESPRIT Bloc E');
   });
 });
+
+describe('link safety', () => {
+  it('safeMailto accepts a plain address only', async () => {
+    const { safeMailto } = await import('../src/stands.js');
+    expect(safeMailto('Comite.deseleves@Esprit.tn')).toBe('mailto:Comite.deseleves@Esprit.tn');
+    expect(safeMailto('a@b.tn?cc=spy@x.com')).toBeNull();
+    expect(safeMailto('a@b.tn?subject=x.com')).toBeNull();
+    expect(safeMailto('javascript:alert(1)//@x.tn')).toBeNull();
+    expect(safeMailto('')).toBeNull();
+  });
+
+  it('safeHttpsUrl blocks non-https schemes', async () => {
+    const { safeHttpsUrl } = await import('../src/stands.js');
+    expect(safeHttpsUrl('https://www.instagram.com/shikshakshok_tn/')).toBe('https://www.instagram.com/shikshakshok_tn/');
+    for (const bad of ['javascript:alert(1)', 'http://example.com', 'data:text/html,hi', ' ', undefined]) {
+      expect(safeHttpsUrl(bad)).toBeNull();
+    }
+  });
+
+});

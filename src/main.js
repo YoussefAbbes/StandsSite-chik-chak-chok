@@ -1,3 +1,12 @@
+// fonts are self-hosted (no request to Google; strict CSP)
+import '@fontsource/rakkas/400.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/600.css';
+import '@fontsource/poppins/700.css';
+import '@fontsource/cairo/500.css';
+import '@fontsource/cairo/700.css';
+import '@fontsource/cinzel/500.css';
+import '@fontsource/aref-ruqaa/700.css';
 import './styles.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';

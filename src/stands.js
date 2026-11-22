@@ -9,6 +9,7 @@ function el(tag, props = {}, children = []) {
   for (const [key, value] of Object.entries(props)) {
     if (key === 'class') node.className = value;
     else if (key === 'text') node.textContent = value;
+    else if (key === 'style') for (const [prop, v] of Object.entries(value)) node.style.setProperty(prop, v);
     else node.setAttribute(key, value);
   }
   for (const child of [].concat(children)) if (child) node.append(child);
@@ -30,7 +31,7 @@ export function safeHttpsUrl(value) {
 /** A plain email address -> mailto link, anything else -> null. */
 export function safeMailto(value) {
   const email = String(value ?? '').trim();
-  return /^[^\s@<>"'()]+@[^\s@<>"'()]+\.[a-z]{2,}$/i.test(email) ? `mailto:${email}` : null;
+  return /^[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/i.test(email) ? `mailto:${email}` : null;
 }
 
 function callButton(phone, label) {
@@ -51,7 +52,7 @@ function standCard(stand, index) {
   const body = stand.people.length
     ? el('ul', { class: 'people' }, stand.people.map(personRow))
     : el('p', { class: 'stand-hint', text: 'Passe au stand — l’équipe est là 💃' });
-  return el('article', { class: 'stand-card', style: `--i:${index}` }, [
+  return el('article', { class: 'stand-card', style: { '--i': String(index) } }, [
     el('div', { class: 'bulbs', 'aria-hidden': 'true' }),
     el('span', { class: 'stand-badge' }, [icon('ticket'), el('span', { text: 'Stand + Tickets' })]),
     el('h3', { class: 'stand-name', text: stand.bloc }),
