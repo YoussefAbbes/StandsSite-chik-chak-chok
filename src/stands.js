@@ -44,8 +44,9 @@ function standCard(stand, index) {
     el('div', { class: 'bulbs', 'aria-hidden': 'true' }),
     badge,
     el('h3', { class: 'stand-name', text: stand.bloc }),
+    // a bloc's own note replaces the default stand line
     stand.note ? el('p', { class: 'stand-note', text: stand.note }) : null,
-    stand.stand ? el('p', { class: 'stand-hint', text: 'Passe au stand — l’équipe est là 💃' }) : null,
+    stand.stand && !stand.note ? el('p', { class: 'stand-hint', text: 'Passe au stand — l’équipe est là 💃' }) : null,
     stand.people.length ? el('ul', { class: 'people' }, stand.people.map(personRow)) : null,
   ]);
 }

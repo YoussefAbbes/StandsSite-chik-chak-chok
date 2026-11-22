@@ -22,6 +22,7 @@ Live: https://youssefabbes.github.io/students_committee_chikchakchok/
 - `"stand": true` = this bloc has a stand (tickets): the card shows **Stand + Tickets** and
   "Passe au stand — l'équipe est là 💃". `"stand": false` = no stand: the card only shows the people to call
   (and is hidden if nobody has a number).
+- `"note": "…"` on a stand replaces the "Passe au stand…" line with your own text (like Bloc A's ticket window).
 
 To add a bloc, copy one `{ "bloc": …, "stand": …, "people": [ … ] }` block and keep the commas between blocks.
 If the update fails, the **Actions** tab shows a red ✗: open it and look at the

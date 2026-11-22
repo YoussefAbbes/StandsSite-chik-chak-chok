@@ -25,8 +25,10 @@ describe('renderStands', () => {
     for (const b of ['Bloc A', 'Bloc G', 'Bloc ESB']) {
       const c = card(root, b);
       expect(c.querySelector('.stand-badge').textContent).toBe('Stand + Tickets');
-      expect(c.querySelector('.stand-hint').textContent).toBe('Passe au stand — l’équipe est là 💃');
       expect(c.classList.contains('is-stand')).toBe(true);
+    }
+    for (const b of ['Bloc G', 'Bloc ESB']) {
+      expect(card(root, b).querySelector('.stand-hint').textContent).toBe('Passe au stand — l’équipe est là 💃');
     }
     for (const b of ['Bloc H', 'Bloc IJK & M', 'Bloc M']) {
       const c = card(root, b);
@@ -74,9 +76,12 @@ describe('renderStands', () => {
     expect(card(root, 'Bloc G').querySelector('a[href^="tel:"]')).toBeNull();
   });
 
-  it('stand cards show only the stand hint text (no note)', () => {
+  it('Bloc A shows only its ticket-window note, not the default stand line', () => {
     renderStands(root, stands);
-    expect(card(root, 'Bloc A').querySelector('.stand-note')).toBeNull();
+    const a = card(root, 'Bloc A');
+    expect(a.querySelector('.stand-note').textContent).toBe('شبّاك التذاكر dans le bureau du comité des étudiants');
+    expect(a.querySelector('.stand-hint')).toBeNull();
+    expect(a.textContent).not.toContain('Passe au stand');
   });
 
   it('still shows a note when data.json has one', () => {
