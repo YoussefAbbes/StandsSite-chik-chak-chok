@@ -523,14 +523,10 @@ footer {
   font-size: 15px;
   color: var(--muted);
 }
-.credit-link {
+.credit-name {
   color: var(--gold-light);
-  text-decoration: none;
-  border-bottom: 1px dashed rgba(242, 193, 91, 0.6);
-  padding: 4px 2px;
   animation: link-glow 2.2s ease-in-out infinite;
 }
-.credit-link:hover, .credit-link:focus-visible { color: #fff; border-bottom-style: solid; }
 @keyframes link-glow {
   0%, 100% { text-shadow: 0 0 4px rgba(242, 193, 91, 0.35); }
   50% { text-shadow: 0 0 10px rgba(255, 214, 140, 0.95), 0 0 22px rgba(242, 160, 60, 0.6); }

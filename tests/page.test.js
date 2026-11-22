@@ -4,12 +4,11 @@ import html from '../index.html?raw';
 const doc = new DOMParser().parseFromString(html, 'text/html');
 
 describe('static page', () => {
-  it('credits Youssef Abbes with a glowing link to GitHub', () => {
-    const a = doc.querySelector('footer a.credit-link');
-    expect(a).not.toBeNull();
-    expect(a.textContent.trim()).toBe('Youssef Abbes');
-    expect(a.getAttribute('href')).toBe('https://github.com/YoussefAbbes');
-    expect(a.getAttribute('rel')).toBe('noopener noreferrer');
+  it('credits Youssef Abbes as plain text, not a link', () => {
+    const credit = doc.querySelector('footer .credit');
+    expect(credit.querySelector('.credit-name').textContent.trim()).toBe('Youssef Abbes');
+    expect(credit.querySelector('a')).toBeNull();
+    expect(html).not.toContain('github.com/YoussefAbbes');
   });
 });
 
