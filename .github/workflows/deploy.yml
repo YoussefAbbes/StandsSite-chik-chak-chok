@@ -26,6 +26,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Check data.json
+        run: npm run check-data
       - run: npm ci --ignore-scripts
       - run: npm test
       - run: npm run build

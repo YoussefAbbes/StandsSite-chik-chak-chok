@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import file from '../public/data.json';
+import file from './fixtures/data.json';
 import { normalizePhone, normalizeStands } from '../src/data.js';
 
 const names = (stands, bloc) => stands.find((s) => s.bloc === bloc).people.map((p) => p.name);

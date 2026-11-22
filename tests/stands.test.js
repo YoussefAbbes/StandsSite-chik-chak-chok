@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import file from '../public/data.json';
+import file from './fixtures/data.json';
 import { normalizeStands } from '../src/data.js';
 import { renderStands, renderContact, renderEvent } from '../src/stands.js';
 

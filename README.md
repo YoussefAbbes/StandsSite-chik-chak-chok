@@ -20,7 +20,10 @@ Live: https://youssefabbes.github.io/StandsSite-chik-chak-chok/
    The QR code never changes.
 
 To add a bloc, copy one `{ "bloc": …, "people": [ … ] }` block and keep the commas between blocks.
-If the update fails, the **Actions** tab shows a red ✗, usually from a missing comma or quote.
+If the update fails, the **Actions** tab shows a red ✗: open it and look at the
+**Check data.json** step. It says exactly what to fix, for example
+`stand #3 (Bloc H), person #1: "name" must be text` or the line of a missing comma.
+Until it's fixed, the site keeps showing the previous version (nothing breaks).
 
 ## Developing
 

@@ -2,6 +2,9 @@
 // data.json is edited by hand on GitHub, so nothing from it is parsed as HTML
 // and links taken from it must be https (or mailto with a plain address).
 import { normalizePhone } from './data.js';
+import { safeHttpsUrl, safeMailto } from './safety.js';
+
+export { safeHttpsUrl, safeMailto };
 import { icon } from './icons.js';
 
 function el(tag, props = {}, children = []) {
@@ -17,22 +20,6 @@ function el(tag, props = {}, children = []) {
 }
 
 const external = { target: '_blank', rel: 'noopener noreferrer' };
-
-/** Only https:// URLs from data.json become links (blocks javascript:, data:, http:). */
-export function safeHttpsUrl(value) {
-  try {
-    const url = new URL(String(value));
-    return url.protocol === 'https:' ? url.href : null;
-  } catch {
-    return null;
-  }
-}
-
-/** A plain email address -> mailto link, anything else -> null. */
-export function safeMailto(value) {
-  const email = String(value ?? '').trim();
-  return /^[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/i.test(email) ? `mailto:${email}` : null;
-}
 
 function callButton(phone, label) {
   return el('a', { class: 'btn btn-call', href: phone.tel, 'aria-label': label }, [

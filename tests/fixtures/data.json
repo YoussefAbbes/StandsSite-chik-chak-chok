@@ -1,0 +1,87 @@
+{
+  "event": {
+    "title": "شيك شك شوك",
+    "subtitle": "في إسبري",
+    "date": "2 ديسمبر 2026",
+    "time": "20h",
+    "place": "ESPRIT Bloc E",
+    "mapUrl": "https://www.google.com/maps/search/?api=1&query=ESPRIT%20Ghazela%20Ariana%20Tunisie"
+  },
+  "contact": {
+    "email": "Comite.deseleves@Esprit.tn",
+    "phones": [
+      "95195235",
+      "25546886"
+    ],
+    "instagramCommittee": "https://www.instagram.com/comite_des_etudiants_esprit/",
+    "instagramEvent": "https://www.instagram.com/shikshakshok_tn/"
+  },
+  "stands": [
+    {
+      "bloc": "Bloc G",
+      "people": [
+        {
+          "name": "Hamma",
+          "phone": ""
+        },
+        {
+          "name": "Ahmed Akacha",
+          "phone": ""
+        }
+      ]
+    },
+    {
+      "bloc": "Bloc ESB",
+      "people": [
+        {
+          "name": "Youusef Abbes",
+          "phone": ""
+        }
+      ]
+    },
+    {
+      "bloc": "Bloc H",
+      "people": [
+        {
+          "name": "Hiba Ghrandi",
+          "phone": "25615375"
+        },
+        {
+          "name": "Isra Radaoui",
+          "phone": ""
+        }
+      ]
+    },
+    {
+      "bloc": "Bloc IJK & M",
+      "people": [
+        {
+          "name": "Mohamed Nour Amri",
+          "phone": "58431239"
+        },
+        {
+          "name": "Heni Troudi",
+          "phone": "22628105"
+        }
+      ]
+    },
+    {
+      "bloc": "Bloc M",
+      "people": [
+        {
+          "name": "Responsable 1",
+          "phone": ""
+        },
+        {
+          "name": "Responsable 2",
+          "phone": ""
+        }
+      ]
+    },
+    {
+      "bloc": "Bloc A",
+      "note": "شبّاك التذاكر dans le bureau du comité des étudiants",
+      "people": []
+    }
+  ]
+}
