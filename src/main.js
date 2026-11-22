@@ -6,6 +6,7 @@ import { loadData } from './data.js';
 import { renderStands, renderContact, renderEvent } from './stands.js';
 import { hydrateIcons } from './icons.js';
 import { runIntro } from './intro.js';
+import { buildAnimatedTitle } from './title.js';
 import silhouetteMeta from '../public/assets/silhouette.json';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -13,6 +14,10 @@ hydrateIcons();
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (sel) => document.querySelector(sel);
+
+$('#hero .title').replaceChildren(
+  buildAnimatedTitle(`${import.meta.env.BASE_URL}assets/title.webp`, 'شيك شك شوك في إسبري'),
+);
 
 function revealCards() {
   if (reducedMotion) return;

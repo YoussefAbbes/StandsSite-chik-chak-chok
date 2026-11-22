@@ -6,7 +6,9 @@ from PIL import Image
 import pypdf
 
 pdf, out = sys.argv[1], sys.argv[2]
-box = [float(v) for v in sys.argv[3:7]] or [0.17, 0.225, 0.89, 0.425]
+box = [float(v) for v in sys.argv[3:7]] or [0.135, 0.226, 0.872, 0.43]
+# thin lines of the poster's arch that reach into the top corners (crop-relative triangles)
+ERASE = [[(0, 0), (0.13, 0), (0, 0.5)], [(0.88, 0), (1, 0), (1, 0.16)]]
 img = pypdf.PdfReader(pdf).pages[0].images[0]
 a = cv2.imdecode(np.frombuffer(img.data, np.uint8), cv2.IMREAD_COLOR)
 h, w = a.shape[:2]
@@ -16,6 +18,9 @@ b, g, r = cv2.split(crop)
 # Gold has a strong green channel; the red velvet/smoke background does not.
 alpha = np.clip((g - 70) / 110, 0, 1)
 alpha = cv2.GaussianBlur(alpha, (0, 0), 1.2)
+ch, cw = alpha.shape
+for tri in ERASE:
+    cv2.fillPoly(alpha, [np.int32([(x * cw, y * ch) for x, y in tri])], 0)
 rgba = np.dstack([r, g, b, alpha * 255]).astype(np.uint8)
 im = Image.fromarray(rgba, 'RGBA')
 bbox = im.getbbox()

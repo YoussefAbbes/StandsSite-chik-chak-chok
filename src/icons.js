@@ -38,6 +38,10 @@ const ICONS = {
     ['circle', { cx: 12, cy: 12, r: 3.8 }],
     ['circle', { cx: 16.7, cy: 7.3, r: 1, class: 'fill' }],
   ],
+  fan: [
+    ['path', { d: 'M3.3 16.7a9 9 0 0 1 17.4 0L12 19z' }],
+    ['path', { d: 'M12 19 6.2 12.1M12 19v-9M12 19l5.8-6.9M12 19v2.6' }],
+  ],
   sparkle: [['path', { d: 'm12 3 1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6z', class: 'fill' }]],
 };
 
@@ -47,6 +51,7 @@ export function icon(name, className = 'icon') {
   const svg = document.createElementNS(SVG_NS, 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('class', className);
+  svg.setAttribute('data-icon', name);
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('focusable', 'false');
   for (const [tag, attrs] of parts) {

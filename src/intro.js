@@ -3,6 +3,7 @@
 // around the dancing silhouette, the gold title glows, then "Entrer". No sound.
 import { gsap } from 'gsap';
 import { icon } from './icons.js';
+import { buildAnimatedTitle } from './title.js';
 
 const BULBS_PER_SIDE = { x: 8, y: 11 };
 
@@ -69,25 +70,23 @@ function buildScene(root, titleUrl) {
     ...bulbPositions().map(([x, y]) => el('span', { class: 'bulb', style: `left:${x}%;top:${y}%` })),
   ]);
   const enter = el('button', { id: 'enter', class: 'btn enter-btn', type: 'button', hidden: '' }, [
-    icon('sparkle'),
+    icon('fan'),
     el('span', { text: 'Entrer' }),
     el('span', { class: 'enter-ar', lang: 'ar', text: 'يلّا' }),
   ]);
-  const skip = el('button', { id: 'skip', class: 'skip-btn', type: 'button', text: 'Passer' });
   root.replaceChildren(
     el('div', { class: 'spot spot-left', 'aria-hidden': 'true' }),
     el('div', { class: 'spot spot-right', 'aria-hidden': 'true' }),
     el('div', { class: 'intro-stage' }, [
       marquee,
-      el('img', { class: 'intro-title', src: titleUrl, alt: 'شيك شك شوك في إسبري', width: '1200', height: '467' }),
+      buildAnimatedTitle(titleUrl, 'شيك شك شوك في إسبري', 'intro-title'),
       el('p', { class: 'intro-hint', text: 'Check the blocs, follow the music' }),
       enter,
     ]),
     el('div', { class: 'curtain curtain-l', 'aria-hidden': 'true' }),
     el('div', { class: 'curtain curtain-r', 'aria-hidden': 'true' }),
-    skip,
   );
-  return { marquee, enter, skip };
+  return { marquee, enter };
 }
 
 function playIn(root, { marquee, enter }) {
@@ -106,7 +105,7 @@ function playIn(root, { marquee, enter }) {
   return tl;
 }
 
-/** Runs the intro inside `root`; resolves once the visitor taps Entrer or Passer. */
+/** Runs the intro inside `root`; resolves once the visitor taps Entrer. */
 export function runIntro(root, { reducedMotion, silhouette, titleUrl = './assets/title.webp' }) {
   document.body.classList.add('intro-open');
   const parts = buildScene(root, titleUrl);
@@ -135,6 +134,5 @@ export function runIntro(root, { reducedMotion, silhouette, titleUrl = './assets
       else gsap.to(root, { opacity: 0, scale: 1.08, duration: 0.7, ease: 'power2.in', onComplete: remove });
     };
     parts.enter.addEventListener('click', finish);
-    parts.skip.addEventListener('click', finish);
   });
 }

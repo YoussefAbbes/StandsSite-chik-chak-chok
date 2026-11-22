@@ -31,17 +31,22 @@ describe('runIntro', () => {
     expect(root.querySelector('#enter').hidden).toBe(false);
   });
 
-  it('skip button resolves', async () => {
-    const done = runIntro(root, opts());
-    root.querySelector('#skip').click();
-    await expect(done).resolves.toBeUndefined();
+  it('has no skip button', () => {
+    runIntro(root, opts());
+    expect(root.querySelector('#skip')).toBeNull();
+    expect(root.textContent).not.toContain('Passer');
+  });
+
+  it('enter button shows the hand-fan icon', () => {
+    runIntro(root, opts());
+    expect(root.querySelector('#enter svg[data-icon="fan"]')).not.toBeNull();
   });
 
   it('builds the marquee bulbs, silhouette canvas and title', () => {
     runIntro(root, opts());
     expect(root.querySelectorAll('.marquee .bulb').length).toBeGreaterThanOrEqual(30);
     expect(root.querySelector('canvas.silhouette')).not.toBeNull();
-    expect(root.querySelector('img.intro-title')).not.toBeNull();
+    expect(root.querySelector('.intro-title.title-anim')).not.toBeNull();
     expect(document.body.classList.contains('intro-open')).toBe(true);
   });
 });

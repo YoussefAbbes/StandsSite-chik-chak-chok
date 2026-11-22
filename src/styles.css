@@ -145,6 +145,79 @@ main, footer {
   filter: drop-shadow(0 0 18px rgba(255, 170, 60, 0.55));
 }
 
+/* ---------- dancing calligraphy: 4 clipped copies, one per word ---------- */
+.title-anim {
+  position: relative;
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1200 / 469;
+  filter: drop-shadow(0 0 16px rgba(255, 170, 60, 0.55));
+  animation: title-glow 2.4s ease-in-out infinite;
+}
+.title-anim .word {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: auto;
+  will-change: transform;
+  -webkit-mask-image: linear-gradient(100deg, #000 42%, rgba(0, 0, 0, 0.45) 50%, #000 58%);
+  mask-image: linear-gradient(100deg, #000 42%, rgba(0, 0, 0, 0.45) 50%, #000 58%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+}
+/* right-to-left: شيك → شك → شوك, like the rhythm of the name */
+.title-anim .w-shik {
+  clip-path: inset(0 0 23% 60%);
+  transform-origin: 80% 70%;
+  animation: word-dance 1.8s ease-in-out infinite, sheen 3.4s linear infinite;
+}
+.title-anim .w-shak {
+  clip-path: inset(0 40% 38% 33%);
+  transform-origin: 46% 60%;
+  animation: word-dance 1.8s ease-in-out infinite 0.3s, sheen 3.4s linear infinite;
+}
+.title-anim .w-shok {
+  clip-path: inset(0 67% 26% 0);
+  transform-origin: 16% 70%;
+  animation: word-dance 1.8s ease-in-out infinite 0.6s, sheen 3.4s linear infinite;
+}
+.title-anim .w-sub {
+  clip-path: polygon(0 74%, 33% 74%, 33% 62%, 60% 62%, 60% 77%, 100% 77%, 100% 100%, 0 100%);
+  animation: sub-float 3.6s ease-in-out infinite, sheen 3.4s linear infinite;
+}
+@keyframes word-dance {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  20% { transform: translateY(-5%) rotate(-2.5deg) scale(1.03); }
+  40% { transform: translateY(0) rotate(0deg) scale(1); }
+  60% { transform: translateY(-2%) rotate(1.5deg) scale(1.015); }
+}
+@keyframes sub-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2.5%); }
+}
+@keyframes sheen {
+  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  to { -webkit-mask-position: 0 0; mask-position: 0 0; }
+}
+@keyframes title-glow {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(255, 170, 60, 0.45)); }
+  50% { filter: drop-shadow(0 0 22px rgba(255, 190, 80, 0.8)); }
+}
+.twinkle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  background: radial-gradient(circle, #fffbe8 0 20%, rgba(255, 214, 140, 0.9) 35%, transparent 70%);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  opacity: 0;
+  pointer-events: none;
+  animation: twinkle 2.2s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(45deg); }
+}
+
 .tagline-en {
   margin: 14px 0 6px;
   font-family: var(--font-deco);
@@ -533,20 +606,7 @@ footer {
 .marquee.chase .bulb:nth-child(even) { animation: bulb-chase 0.8s steps(1) infinite 0.4s; }
 @keyframes bulb-chase { 50% { filter: brightness(0.55); } }
 
-.intro-title {
-  width: min(84vw, 360px);
-  height: auto;
-  filter: drop-shadow(0 0 16px rgba(255, 170, 60, 0.6));
-  -webkit-mask-image: linear-gradient(100deg, #000 40%, rgba(0, 0, 0, 0.55) 50%, #000 60%);
-  mask-image: linear-gradient(100deg, #000 40%, rgba(0, 0, 0, 0.55) 50%, #000 60%);
-  -webkit-mask-size: 300% 100%;
-  mask-size: 300% 100%;
-  animation: sheen 3.2s linear infinite;
-}
-@keyframes sheen {
-  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-  to { -webkit-mask-position: 0 0; mask-position: 0 0; }
-}
+.intro-title { width: min(86vw, 380px); }
 
 .intro-hint {
   margin: 0;
@@ -569,21 +629,6 @@ footer {
 }
 .enter-btn[hidden] { display: none; }
 .enter-ar { font-family: var(--font-ar); font-weight: 700; font-size: 17px; }
-
-.skip-btn {
-  position: absolute;
-  top: max(14px, env(safe-area-inset-top));
-  right: 16px;
-  z-index: 4;
-  min-height: 40px;
-  padding: 8px 14px;
-  border: 1px solid rgba(242, 193, 91, 0.5);
-  border-radius: 999px;
-  background: rgba(26, 4, 5, 0.6);
-  color: var(--gold-light);
-  font: 600 13px var(--font-latin);
-  cursor: pointer;
-}
 
 .spot {
   position: absolute;
