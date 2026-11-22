@@ -559,9 +559,14 @@ footer {
   position: fixed;
   inset: 0;
   z-index: 50;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
+  /* never trap anyone: if the stage is taller than the screen, it scrolls */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
   background:
     radial-gradient(ellipse 70% 55% at 50% 38%, rgba(224, 38, 27, 0.35), transparent 70%),
     var(--bg);
@@ -580,9 +585,9 @@ footer {
 
 .marquee {
   position: relative;
-  width: min(64vw, 270px);
+  /* height = 1.25 × width, so cap width by screen height too (≤ 40% of it) */
+  width: min(64vw, 270px, 32svh);
   aspect-ratio: 4 / 5;
-  max-height: 46svh;
   border: 3px solid #c9781f;
   border-radius: 6px;
   background: #1b0203;
@@ -633,7 +638,21 @@ footer {
 .marquee.chase .bulb:nth-child(even) { animation: bulb-chase 0.8s steps(1) infinite 0.4s; }
 @keyframes bulb-chase { 50% { filter: brightness(0.55); } }
 
-.intro-title { width: min(86vw, 380px); }
+.intro-title { width: min(86vw, 380px, 51svh); }
+
+/* phone held sideways: dancer on the left, title + Entrer on the right */
+@media (orientation: landscape) and (max-height: 540px) {
+  .intro-stage {
+    width: auto;
+    grid-template-columns: auto auto;
+    align-items: center;
+    column-gap: clamp(16px, 5vw, 48px);
+    row-gap: 10px;
+    padding: 16px 0;
+  }
+  .marquee { grid-row: 1 / span 3; width: min(30vw, 64svh); }
+  .intro-title { width: min(42vw, 340px); }
+}
 
 .intro-hint {
   margin: 0;
