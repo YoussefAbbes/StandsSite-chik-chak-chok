@@ -94,3 +94,21 @@ describe('renderEvent', () => {
     expect(root.textContent).not.toMatch(EMOJI);
   });
 });
+
+describe('event map link', () => {
+  it('opens the place chip in maps', () => {
+    renderEvent(root, file.event);
+    const link = root.querySelector('a.event-map');
+    expect(link).not.toBeNull();
+    expect(link.getAttribute('href')).toMatch(/^https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=ESPRIT/);
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(link.textContent).toContain('ESPRIT Bloc E');
+  });
+
+  it('ignores a non-https map url', () => {
+    renderEvent(root, { ...file.event, mapUrl: 'javascript:alert(1)' });
+    expect(root.querySelector('a')).toBeNull();
+    expect(root.textContent).toContain('ESPRIT Bloc E');
+  });
+});

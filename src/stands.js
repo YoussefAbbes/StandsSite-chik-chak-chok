@@ -81,7 +81,16 @@ export function renderStands(container, stands, { onRetry } = {}) {
 export function renderEvent(container, event) {
   if (!event) return;
   const chip = (name, text) => el('li', {}, [icon(name), el('bdi', { text })]);
-  container.replaceChildren(chip('calendar', event.date), chip('clock', event.time), chip('pin', event.place));
+  const map = safeHttpsUrl(event.mapUrl);
+  const place = map
+    ? el('li', {}, [
+        el('a', { class: 'event-map', href: map, ...external, 'aria-label': `${event.place} — ouvrir dans Maps` }, [
+          icon('pin'),
+          el('bdi', { text: event.place }),
+        ]),
+      ])
+    : chip('pin', event.place);
+  container.replaceChildren(chip('calendar', event.date), chip('clock', event.time), place);
 }
 
 export function renderContact(container, contact) {
