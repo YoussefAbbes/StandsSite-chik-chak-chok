@@ -5,6 +5,8 @@ import bundled from '../public/data.json';
 import { loadData } from './data.js';
 import { renderStands, renderContact, renderEvent } from './stands.js';
 import { hydrateIcons } from './icons.js';
+import { runIntro } from './intro.js';
+import silhouetteMeta from '../public/assets/silhouette.json';
 
 gsap.registerPlugin(ScrollTrigger);
 hydrateIcons();
@@ -32,6 +34,12 @@ async function showData() {
 }
 
 showData();
+
+runIntro($('#intro'), {
+  reducedMotion,
+  silhouette: { url: `${import.meta.env.BASE_URL}assets/silhouette.webp`, meta: silhouetteMeta },
+  titleUrl: `${import.meta.env.BASE_URL}assets/title.webp`,
+}).then(() => ScrollTrigger.refresh());
 
 // 3D is decoration: load it after the content, and never let it break the page.
 import('./scene3d.js')

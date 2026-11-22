@@ -38,14 +38,6 @@ const ICONS = {
     ['circle', { cx: 12, cy: 12, r: 3.8 }],
     ['circle', { cx: 16.7, cy: 7.3, r: 1, class: 'fill' }],
   ],
-  soundOn: [
-    ['path', { d: 'M4 9.5h3.5L12 6v12l-4.5-3.5H4z' }],
-    ['path', { d: 'M15.5 9a4 4 0 0 1 0 6M18 6.5a7.6 7.6 0 0 1 0 11' }],
-  ],
-  soundOff: [
-    ['path', { d: 'M4 9.5h3.5L12 6v12l-4.5-3.5H4z' }],
-    ['path', { d: 'm16 9.5 5 5m0-5-5 5' }],
-  ],
   sparkle: [['path', { d: 'm12 3 1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6z', class: 'fill' }]],
 };
 
