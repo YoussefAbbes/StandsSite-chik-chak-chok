@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { securityMeta } from './build/security.js';
 
 export default defineConfig({
-  base: '/StandsSite-chik-chak-chok/',
+  base: '/students_committee_chikchakchok/',
   plugins: [securityMeta()],
   build: {
     chunkSizeWarningLimit: 700, // the lazily loaded 3D chunk is ~570 KB (140 KB gzip)

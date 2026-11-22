@@ -23,7 +23,7 @@ from reportlab.lib.colors import HexColor
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 
-URL = 'https://youssefabbes.github.io/StandsSite-chik-chak-chok/'
+URL = 'https://youssefabbes.github.io/students_committee_chikchakchok/'
 DARK, CREAM, GOLD, GOLD_LIGHT, RED = '#2a0306', '#fff6e6', '#c8902e', '#f2c15b', '#c41e17'
 FRAME_CENTER = (3608, 5981)  # inside of the poster's empty frame (4961x7016 artwork px)
 CARD_PX = 700                # card side on the artwork (~5.9 cm)

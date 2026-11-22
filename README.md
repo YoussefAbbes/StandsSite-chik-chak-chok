@@ -4,7 +4,7 @@ The page behind the QR code on the **شيك شك شوك في إسبري** poster
 every bloc has a stand, tickets are sold there, and each stand's
 responsable can be called in one tap.
 
-Live: https://youssefabbes.github.io/StandsSite-chik-chak-chok/
+Live: https://youssefabbes.github.io/students_committee_chikchakchok/
 
 ## Changing a name or a phone number (no code needed)
 
@@ -29,7 +29,7 @@ Until it's fixed, the site keeps showing the previous version (nothing breaks).
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173/StandsSite-chik-chak-chok/
+npm run dev      # http://localhost:5173/students_committee_chikchakchok/
 npm test
 npm run build
 ```
