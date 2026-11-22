@@ -2,7 +2,8 @@
 
 Style: soft rounded-square burgundy dots on cream, rounded finder "eyes", gold double border with
 sparkles, and a gold medallion with the dancing silhouette in the centre. The centre
-is allowed to cover modules because the code uses error-correction level H (30%).
+is allowed to cover modules: it hides ~4% of the code, well within error-correction level Q (25%).
+(Q instead of H keeps the longer repo URL at 41x41 modules, so each dot stays big enough to scan from afar.)
 
 Usage: python -I tools/make_qr_poster.py <poster.pdf> <out_dir> [silhouette.webp]
 Writes: <out_dir>/Shik_Shak_Shok_A2_Print_QR.pdf, <out_dir>/qr/qr.svg, <out_dir>/qr/qr.png,
@@ -34,7 +35,7 @@ LOGO_R = 4.4                 # centre medallion radius, in modules (blanks ~6% o
 
 
 def qr_matrix(url):
-    qr = QRCode(None, QRErrorCorrectLevel.H)
+    qr = QRCode(None, QRErrorCorrectLevel.Q)
     qr.addData(url)
     qr.make()
     n = qr.getModuleCount()
@@ -259,7 +260,7 @@ def main():
         ok = decode(im) == URL
         failures += not ok
         print(f'decode {label}: {"OK" if ok else "FAIL"}')
-    print(f'QR card {CARD_PX / img_w * 420:.0f} mm, {len(matrix)}x{len(matrix)} modules (level H); wrote {out_pdf}')
+    print(f'QR card {CARD_PX / img_w * 420:.0f} mm, {len(matrix)}x{len(matrix)} modules (level Q); wrote {out_pdf}')
     sys.exit(1 if failures else 0)
 
 
