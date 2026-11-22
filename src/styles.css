@@ -16,7 +16,6 @@
   --font-ar-display: 'Aref Ruqaa', serif;
   --font-ar: 'Cairo', sans-serif;
   --font-latin: 'Poppins', system-ui, sans-serif;
-  --font-deco: 'Cinzel', serif;
   --font-party: 'Rakkas', 'Cairo', serif;
 }
 
@@ -218,13 +217,18 @@ main, footer {
   50% { opacity: 1; transform: scale(1.2) rotate(45deg); }
 }
 
-.tagline-en {
-  margin: 14px 0 6px;
-  font-family: var(--font-deco);
-  letter-spacing: 0.32em;
-  font-size: clamp(11px, 3vw, 14px);
-  text-transform: uppercase;
-  color: var(--gold-light);
+.tagline-ar {
+  margin: 10px 0 4px;
+  font-family: var(--font-ar-display);
+  font-size: clamp(26px, 8vw, 38px);
+  line-height: 1.3;
+  letter-spacing: 0; /* spacing would break the joins between Arabic letters */
+  background: linear-gradient(180deg, var(--gold-light), var(--gold) 55%, var(--gold-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgba(242, 193, 91, 0.45));
+  animation: beat 0.9s ease-in-out infinite;
 }
 .event-chips {
   list-style: none;

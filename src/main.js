@@ -5,7 +5,6 @@ import '@fontsource/poppins/600.css';
 import '@fontsource/poppins/700.css';
 import '@fontsource/cairo/500.css';
 import '@fontsource/cairo/700.css';
-import '@fontsource/cinzel/500.css';
 import '@fontsource/aref-ruqaa/700.css';
 import './styles.css';
 import { gsap } from 'gsap';
