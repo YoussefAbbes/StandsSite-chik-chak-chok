@@ -85,6 +85,7 @@ export function validateData(raw) {
   else {
     for (const key of ['date', 'time', 'place']) if (!isText(e[key])) errors.push(`event: "${key}" must be text`);
     if (e.mapUrl !== undefined && !safeHttpsUrl(e.mapUrl)) errors.push('event: "mapUrl" must start with https://');
+    if (e.price !== undefined && typeof e.price !== 'string') errors.push('event: "price" must be text, e.g. "Ticket 20 DT"');
   }
   return errors;
 }

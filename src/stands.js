@@ -82,7 +82,12 @@ export function renderEvent(container, event) {
         ]),
       ])
     : chip('pin', event.place);
-  container.replaceChildren(chip('calendar', event.date), chip('clock', event.time), place);
+  // optional ticket price chip ("Ticket 20 DT"), only when data.json has event.price
+  const hasPrice = typeof event.price === 'string' && event.price.trim();
+  container.replaceChildren(
+    chip('calendar', event.date), chip('clock', event.time), place,
+    ...(hasPrice ? [chip('ticket', event.price.trim())] : []),
+  );
 }
 
 export function renderContact(container, contact) {

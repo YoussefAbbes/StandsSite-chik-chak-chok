@@ -133,6 +133,21 @@ describe('renderEvent', () => {
   });
 });
 
+describe('event ticket price', () => {
+  it('adds a ticket chip after the place when event.price is set', () => {
+    renderEvent(root, { ...file.event, price: 'Ticket 20 DT' });
+    const items = [...root.querySelectorAll('li')];
+    expect(items).toHaveLength(4);
+    expect(items[3].querySelector('bdi').textContent).toBe('Ticket 20 DT');
+    expect(items[3].querySelector('svg').getAttribute('data-icon')).toBe('ticket');
+  });
+
+  it('shows no price chip when price is missing or empty', () => {
+    renderEvent(root, { ...file.event, price: '  ' });
+    expect(root.querySelectorAll('li')).toHaveLength(3);
+  });
+});
+
 describe('event map link', () => {
   it('opens the place chip in maps', () => {
     renderEvent(root, file.event);
