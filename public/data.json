@@ -21,7 +21,12 @@
       "bloc": "Bloc A",
       "stand": true,
       "note": "شبّاك التذاكر dans le bureau du comité des étudiants",
-      "people": []
+      "people": [
+        {
+          "name": "Ahmed Akacha",
+          "phone": "95651830"
+        }
+      ]
     },
     {
       "bloc": "Bloc G",
@@ -34,6 +39,10 @@
         {
           "name": "Ahmed Akacha",
           "phone": ""
+        },
+        {
+          "name": "Ikram Soula",
+          "phone": "92856241"
         }
       ]
     },
