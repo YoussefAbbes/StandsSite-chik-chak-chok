@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1a0405">
+  <title>Roue Shik Shak Shok</title>
+  <link rel="icon" href="assets/ssk-badge.webp" type="image/webp">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="opening">
+  <!-- atmosphere -->
+  <div class="spot spot-left" aria-hidden="true"></div>
+  <div class="spot spot-right" aria-hidden="true"></div>
+  <div id="sparks" class="sparks" aria-hidden="true"></div>
+  <div id="dancers" class="dancers" aria-hidden="true"></div>
+  <div class="curtain-edge curtain-left" aria-hidden="true"></div>
+  <div class="curtain-edge curtain-right" aria-hidden="true"></div>
+  <div class="smoke" aria-hidden="true"></div>
+  <!-- opening curtains (slide away on load) -->
+  <div class="open-curtain open-l" aria-hidden="true"></div>
+  <div class="open-curtain open-r" aria-hidden="true"></div>
+
+  <main class="stage">
+    <header class="brand">
+      <!-- Dancing calligraphy: 4 copies of the title, each clipped to one word -->
+      <div id="logo" class="title-anim" role="img" aria-label="شيك شك شوك في إسبري">
+        <img class="word w-shik" src="assets/title.webp" alt="" draggable="false">
+        <img class="word w-shak" src="assets/title.webp" alt="" draggable="false">
+        <img class="word w-shok" src="assets/title.webp" alt="" draggable="false">
+        <img class="word w-sub"  src="assets/title.webp" alt="" draggable="false">
+        <span class="twinkle" style="left:8%;top:18%;animation-delay:0s"></span>
+        <span class="twinkle" style="left:30%;top:6%;animation-delay:.37s"></span>
+        <span class="twinkle" style="left:55%;top:14%;animation-delay:.74s"></span>
+        <span class="twinkle" style="left:78%;top:4%;animation-delay:1.11s"></span>
+        <span class="twinkle" style="left:92%;top:30%;animation-delay:1.48s"></span>
+        <span class="twinkle" style="left:18%;top:62%;animation-delay:1.85s"></span>
+        <span class="twinkle" style="left:70%;top:70%;animation-delay:.12s"></span>
+      </div>
+      <p class="tagline"><span class="tag-word">Roue</span> <span class="tag-word">de</span> <span class="tag-word">la</span> <span class="tag-word">chance</span> <span class="ar tag-word">— دور و اربح</span></p>
+    </header>
+
+    <section class="wheel-wrap" aria-label="Roue de la chance">
+      <div class="halo" aria-hidden="true"></div>
+      <svg id="wheel" class="wheel" viewBox="-260 -260 520 520" role="img" aria-label="Roue">
+        <defs>
+          <radialGradient id="g-gold" cx="50%" cy="30%" r="80%">
+            <stop offset="0" stop-color="#ffe3a3"/><stop offset=".55" stop-color="#f2c15b"/><stop offset="1" stop-color="#a8742a"/>
+          </radialGradient>
+          <radialGradient id="g-jackpot" cx="50%" cy="50%" r="60%">
+            <stop offset="0" stop-color="#fff6e6"/><stop offset=".5" stop-color="#ffe3a3"/><stop offset="1" stop-color="#f2c15b"/>
+          </radialGradient>
+          <linearGradient id="g-rim" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffe3a3"/><stop offset=".5" stop-color="#a8742a"/><stop offset="1" stop-color="#f2c15b"/>
+          </linearGradient>
+          <filter id="f-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <clipPath id="badge-clip"><circle r="58"/></clipPath>
+        </defs>
+        <circle r="252" fill="#1a0405" opacity=".6"/>
+        <g id="rotor"></g>
+        <circle r="228" fill="none" stroke="url(#g-rim)" stroke-width="16"/>
+        <g id="bulbs"></g>
+        <!-- Centre: Shik Shak Shok badge, also a spin button -->
+        <g id="hub" class="hub" tabindex="0" role="button" aria-label="Tourner la roue">
+          <circle class="hub-ring" r="74" fill="none" stroke="#f2c15b" stroke-width="3"/>
+          <circle r="66" fill="url(#g-gold)" stroke="#3d0507" stroke-width="4"/>
+          <image href="assets/ssk-badge.webp" x="-58" y="-58" width="116" height="116" clip-path="url(#badge-clip)" preserveAspectRatio="xMidYMid slice"/>
+          <circle r="58" fill="none" stroke="#3d0507" stroke-width="2"/>
+        </g>
+        <g id="pointer" class="pointer">
+          <path d="M0 -206 L-20 -258 Q0 -268 20 -258 Z" fill="url(#g-gold)" stroke="#3d0507" stroke-width="3"/>
+          <circle cy="-250" r="6" fill="#e0261b"/>
+        </g>
+      </svg>
+    </section>
+
+    <aside class="side">
+      <button id="spin" class="spin-btn" type="button" aria-label="Tourner la roue"><span class="shine" aria-hidden="true"></span><span lang="ar">دور</span></button>
+      <ol id="rules" class="rules"></ol>
+      <div class="organiser">
+        <span>Organisé par</span>
+        <img class="committee" src="assets/committee.png" alt="ESPRIT Student Committee" draggable="false">
+      </div>
+    </aside>
+  </main>
+
+  <!-- Result -->
+  <div id="result" class="overlay" hidden>
+    <div class="rays" aria-hidden="true"></div>
+    <div class="result-card" role="dialog" aria-modal="true" aria-labelledby="result-prize">
+      <img class="result-badge" src="assets/ssk-badge.webp" alt="" aria-hidden="true">
+      <p id="result-kicker" class="result-kicker">مبروك !</p>
+      <h2 id="result-prize" class="result-prize"></h2>
+      <p id="result-sub" class="result-sub"></p>
+      <p id="result-hint" class="result-hint" hidden></p>
+      <button id="result-btn" class="spin-btn small" type="button">Suivant</button>
+    </div>
+  </div>
+
+  <!-- Staff -->
+  <div id="pin" class="overlay" hidden>
+    <form id="pin-form" class="panel pin-panel">
+      <h2>Staff</h2>
+      <input id="pin-input" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN staff">
+      <div class="row"><button type="button" id="pin-cancel" class="ghost">Annuler</button><button type="submit" class="solid">OK</button></div>
+    </form>
+  </div>
+
+  <div id="staff" class="overlay" hidden>
+    <div class="panel staff-panel" role="dialog" aria-modal="true" aria-label="Panneau staff">
+      <div class="staff-head">
+        <h2>Panneau staff</h2>
+        <button type="button" id="staff-close" class="ghost">Fermer</button>
+      </div>
+      <div class="row wrap">
+        <span class="label">Mode&nbsp;:</span>
+        <button type="button" class="seg" data-mode="stand">Stand tickets</button>
+        <button type="button" class="seg" data-mode="soiree">Soirée</button>
+        <button type="button" id="fullscreen" class="ghost">Plein écran</button>
+        <button type="button" id="sound-toggle" class="ghost">Son : activé</button>
+      </div>
+      <p id="staff-stats" class="stats"></p>
+      <div class="table-scroll">
+        <table class="prize-table">
+          <thead><tr><th>Lot</th><th>Chance</th><th>Gagnés auj.</th><th>Limite/jour</th><th>Stock</th></tr></thead>
+          <tbody id="staff-rows"></tbody>
+        </table>
+      </div>
+      <div class="row wrap">
+        <button type="button" id="undo" class="ghost">Annuler le dernier tour</button>
+        <button type="button" id="reset-day" class="ghost danger">Remettre aujourd'hui à zéro</button>
+      </div>
+      <h3 class="log-title">Journal des tours</h3>
+      <p id="log-status" class="stats"></p>
+      <div class="row wrap">
+        <button type="button" id="log-download" class="solid">Télécharger le journal (CSV)</button>
+        <button type="button" id="log-live" class="ghost">Enregistrer en direct dans un fichier…</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- staff-only status of the spin journal file (small, bottom-left) -->
+  <button id="log-chip" class="log-chip" type="button" hidden></button>
+
+  <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+
+  <script src="config.js"></script>
+  <script src="config.web.js"></script>
+  <script src="logic.js"></script>
+  <script src="sound.js"></script>
+  <script src="dancers.js"></script>
+  <script src="wheel.js"></script>
+</body>
+</html>
