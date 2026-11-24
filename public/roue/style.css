@@ -439,19 +439,6 @@ body.lite .wheel { filter: none; }
   box-shadow: 0 4px 14px rgba(0, 0, 0, .5); pointer-events: none;
 }
 
-/* spin-journal status chip (staff info), bottom-left, discreet */
-.log-chip[hidden] { display: none; }
-.log-chip {
-  position: fixed; left: 10px; bottom: 8px; z-index: 6;
-  font: 700 11px/1 var(--ar); letter-spacing: .02em;
-  padding: 6px 10px; border-radius: 999px; cursor: pointer;
-  background: rgba(26, 4, 5, .75); border: 1px solid rgba(242, 193, 91, .25); color: var(--muted);
-  opacity: .7; transition: opacity .2s;
-}
-.log-chip:hover { opacity: 1; }
-.log-chip.ok { color: #9be39b; border-color: rgba(120, 220, 120, .35); cursor: default; }
-.log-chip.warn { color: #ffcf7a; }
-
 /* ================= lively result text ================= */
 /* each letter drops in with a bounce, then keeps dancing in a wave with a moving gold shine */
 .result-prize .word { display: inline-block; white-space: nowrap; margin: 0 .1em; }

@@ -587,17 +587,12 @@
   function renderLogStatus() {
     const log = state.log || [];
     const done = log.filter((e) => !e.cancelled).length;
-    const live = liveHandle ? ` · Enregistrement en direct dans « ${liveHandle.name} »` : '';
+    const live = liveHandle ? ` · Enregistrement en direct dans « ${liveHandle.name} »`
+      : pendingHandle ? ' · Fichier en attente : touchez « Reconnecter » ci-dessous' : '';
     $('log-status').textContent = `${done} tours enregistrés (${log.length - done} annulés) sur « ${CFG.deviceName || 'cet appareil'} »${live}.`;
     $('log-live').hidden = !canLive;
-    $('log-live').textContent = liveHandle ? 'Changer de fichier…' : 'Enregistrer en direct dans un fichier…';
-    // small corner chip so staff always know whether spins also go to the file
-    const chip = $('log-chip');
-    chip.hidden = !canLive;
-    chip.className = 'log-chip ' + (liveHandle ? 'ok' : 'warn');
-    chip.textContent = liveHandle ? `● Journal : ${liveHandle.name}`
-      : pendingHandle ? '● Journal : touchez pour reconnecter'
-      : '● Journal : touchez pour choisir le fichier';
+    $('log-live').textContent = liveHandle ? 'Changer de fichier…'
+      : pendingHandle ? `Reconnecter « ${pendingHandle.name} »…` : 'Enregistrer en direct dans un fichier…';
   }
 
   function closeStaff() {
@@ -649,11 +644,7 @@
   }));
   $('undo').addEventListener('click', undoLast);
   $('log-download').addEventListener('click', downloadLog);
-  $('log-live').addEventListener('click', chooseLiveFile);
-  $('log-chip').addEventListener('click', () => {
-    if (liveHandle) return;
-    if (pendingHandle) resumeLog(true); else chooseLiveFile();
-  });
+  $('log-live').addEventListener('click', () => (pendingHandle ? resumeLog(true) : chooseLiveFile()));
   $('reset-day').addEventListener('click', () => {
     if (!confirm("Remettre les compteurs d'aujourd'hui à zéro ? (le stock et le journal ne changent pas)")) return;
     delete state.days[L.todayKey(Date.now())];
