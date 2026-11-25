@@ -90,6 +90,9 @@ export function renderEvent(container, event) {
   );
 }
 
+// the reservation button lives with the form (reserve-ui.js); re-exported for callers of stands.js
+export { renderReserveButton as renderReserve } from './reserve-ui.js';
+
 export function renderContact(container, contact) {
   container.replaceChildren();
   if (!contact) return;

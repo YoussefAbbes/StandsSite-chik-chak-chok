@@ -14,6 +14,10 @@ describe('security meta (build only)', () => {
     expect(CSP).not.toContain('unsafe-eval');
   });
 
+  it('lets the reservation form reach only the Google script', () => {
+    expect(CSP).toContain("connect-src 'self' https://script.google.com https://script.googleusercontent.com");
+  });
+
   it('sets a strict referrer policy', () => {
     expect(out).toContain('<meta name="referrer" content="strict-origin-when-cross-origin"');
   });

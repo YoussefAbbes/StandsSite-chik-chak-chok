@@ -10,11 +10,12 @@ import './styles.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import bundled from '../public/data.json';
-import { loadData } from './data.js';
-import { renderStands, renderContact, renderEvent } from './stands.js';
+import { loadData, normalizePhone } from './data.js';
+import { renderStands, renderContact, renderEvent, renderReserve } from './stands.js';
 import { hydrateIcons } from './icons.js';
 import { runIntro } from './intro.js';
 import { buildAnimatedTitle } from './title.js';
+import { openReserveSheet, shouldAutoOpen } from './reserve-ui.js';
 import silhouetteMeta from '../public/assets/silhouette.json';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -37,24 +38,59 @@ function revealCards() {
   });
 }
 
+const silhouette = { url: `${import.meta.env.BASE_URL}assets/silhouette.webp`, meta: silhouetteMeta };
+let openForm = null;
+
+/** Local review only (stripped from the GitHub build): with no script link yet, fake the
+ *  Google answer. ?reserveStub=duplicate or ?reserveStub=network shows the other screens. */
+function devStub(reservation) {
+  if (!import.meta.env.DEV || reservation) return { reservation, submit: undefined };
+  const raw = bundled.reservation;
+  const mode = new URLSearchParams(location.search).get('reserveStub') || 'ok';
+  const reply = mode === 'ok' ? { ok: true } : { ok: false, error: mode };
+  return {
+    reservation: { endpoint: 'stub', lastDay: raw.lastDay, blocs: raw.blocs.map((b) => ({ bloc: b.bloc, rooms: b.rooms ?? [] })) },
+    submit: () => new Promise((r) => setTimeout(() => r(reply), 700)),
+  };
+}
+
 async function showData() {
-  const { event, contact, stands } = await loadData(undefined, bundled);
+  const data = await loadData(undefined, bundled);
+  const { event, contact, stands } = data;
+  const { reservation, submit } = devStub(data.reservation);
+  const phones = (Array.isArray(contact?.phones) ? contact.phones : []).map(normalizePhone).filter(Boolean);
+  openForm = reservation ? () => openReserveSheet(reservation, { phones, silhouette, submit }) : null;
   // each section on its own: a bad field in one never blanks the others
   const safely = (fn) => { try { fn(); } catch (err) { console.error(err); } };
   safely(() => renderEvent($('#event-line'), event));
+  safely(() => renderReserve($('#reserve'), reservation, { onOpen: openForm }));
+  safely(() => renderReserve($('#reserve-float'), reservation, { compact: true, onOpen: openForm }));
   safely(() => renderStands($('#stands'), stands, { onRetry: showData }));
   safely(() => renderContact($('#contact'), contact));
   revealCards();
   ScrollTrigger.refresh();
 }
 
-showData();
+const dataReady = showData();
+
+// floating "Réserver maintenant" pill: only once the hero button has scrolled out of view
+const floatPill = $('#reserve-float');
+if ('IntersectionObserver' in window && floatPill) {
+  new IntersectionObserver(([entry]) => {
+    floatPill.classList.toggle('show', !entry.isIntersecting);
+  }).observe($('#hero'));
+}
 
 runIntro($('#intro'), {
   reducedMotion,
-  silhouette: { url: `${import.meta.env.BASE_URL}assets/silhouette.webp`, meta: silhouetteMeta },
+  silhouette,
   titleUrl: `${import.meta.env.BASE_URL}assets/title.webp`,
-}).then(() => ScrollTrigger.refresh());
+}).then(async () => {
+  ScrollTrigger.refresh();
+  // a shared link ending in #reserver opens the form right after the intro
+  await dataReady;
+  if (openForm && shouldAutoOpen(location)) openForm();
+});
 
 // 3D is decoration: load it after the content, and never let it break the page.
 import('./scene3d.js')

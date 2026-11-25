@@ -103,5 +103,35 @@
         }
       ]
     }
-  ]
+  ],
+  "reservation": {
+    "endpoint": "https://script.google.com/macros/s/AKfycbxJ5imgs-7frgIM_PzQZ56xvstdrxHzsn6hI0TqaR2hqdThdsn0cMo9k1MT5FC0SX5fVA/exec",
+    "lastDay": "2026-12-02",
+    "blocs": [
+      {
+        "bloc": "Bloc A",
+        "rooms": []
+      },
+      {
+        "bloc": "Bloc C",
+        "rooms": []
+      },
+      {
+        "bloc": "Bloc G",
+        "rooms": []
+      },
+      {
+        "bloc": "Bloc IJK",
+        "rooms": []
+      },
+      {
+        "bloc": "Bloc M",
+        "rooms": []
+      },
+      {
+        "bloc": "Bloc E",
+        "rooms": []
+      }
+    ]
+  }
 }

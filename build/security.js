@@ -7,7 +7,8 @@ export const CSP = [
   "style-src 'self'",
   "img-src 'self' data:",
   "font-src 'self'",
-  "connect-src 'self'",
+  // the reservation form posts to the Google Apps Script web app (it answers via googleusercontent)
+  "connect-src 'self' https://script.google.com https://script.googleusercontent.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'none'",

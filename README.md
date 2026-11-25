@@ -30,6 +30,25 @@ If the update fails, the **Actions** tab shows a red ✗: open it and look at th
 `stand #3 (Bloc H), person #1: "name" must be text` or the line of a missing comma.
 Until it's fixed, the site keeps showing the previous version (nothing breaks).
 
+## Reservations (in-site form → Google Sheet)
+
+Students reserve from the **Réserver maintenant** button; each reservation becomes a row in
+the team's Google Sheet. One-time setup: `tools/RESERVATION_SETUP.md`.
+
+In `public/data.json`, the `reservation` block:
+```json
+"reservation": {
+  "endpoint": "https://script.google.com/macros/s/…/exec",
+  "lastDay": "2026-12-02",
+  "blocs": [ { "bloc": "Bloc C", "rooms": ["C 0-1", "C 1-1", "C 1-2"] }, … ]
+}
+```
+- `endpoint` empty → the button is hidden (use this to close reservations).
+- `rooms` empty → students pick étage 0–4 and salle 1–15 (sent to the Sheet as `C 2-7`); filled → they pick from that list.
+- `lastDay` = the last day students can choose.
+- Local test without the real script: `npm run dev`; the form fakes Google's answer
+  (`?reserveStub=duplicate` or `?reserveStub=network` to see the other screens).
+
 ## Developing
 
 ```bash

@@ -87,11 +87,74 @@ export function validateData(raw) {
     if (e.mapUrl !== undefined && !safeHttpsUrl(e.mapUrl)) errors.push('event: "mapUrl" must start with https://');
     if (e.price !== undefined && typeof e.price !== 'string') errors.push('event: "price" must be text, e.g. "Ticket 20 DT"');
   }
+  const r = raw.reservation;
+  if (r !== undefined) {
+    if (!isObj(r)) errors.push('"reservation" must be { … }');
+    else {
+      if (r.endpoint !== undefined && r.endpoint !== '' && !scriptEndpoint(r.endpoint)) {
+        errors.push('"reservation": "endpoint" must be a https://script.google.com link');
+      }
+      if (r.lastDay !== undefined && !(isText(r.lastDay) && ISO_DAY.test(r.lastDay))) {
+        errors.push('"reservation": "lastDay" must look like 2026-12-02');
+      }
+      if (!Array.isArray(r.blocs)) errors.push(`"reservation": "blocs" ${LIST}`);
+      else {
+        r.blocs.forEach((b, i) => {
+          const at = `"reservation" bloc #${i + 1}`;
+          if (!isObj(b) || !isText(b.bloc)) return errors.push(`${at}: "bloc" must be text`);
+          if (b.bloc.trim().length > MAX_BLOC) errors.push(`${at}: "bloc" is longer than ${MAX_BLOC} characters`);
+          if (b.rooms === undefined) return;
+          if (!Array.isArray(b.rooms)) return errors.push(`${at}: "rooms" ${LIST}`);
+          for (const room of b.rooms) {
+            if (isText(room) && room.trim().length > MAX_ROOM) errors.push(`${at}: room "${room.trim()}" is longer than ${MAX_ROOM} characters`);
+          }
+        });
+      }
+    }
+  }
   return errors;
 }
 
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+// same limits as the Google script, so a long name fails the data check, not the students
+const MAX_BLOC = 20;
+const MAX_ROOM = 12;
+
+/** Only a Google Apps Script web-app URL may receive the students' data. */
+function scriptEndpoint(value) {
+  const url = safeHttpsUrl(value);
+  if (!url) return null;
+  const { hostname, pathname } = new URL(url);
+  // the deployed web app (/exec); the editor's /dev link needs the owner's login
+  // standard account: /macros/s/<id>/exec · school (Workspace) account: /a/macros/<domain>/s/<id>/exec
+  return hostname === 'script.google.com' && /^\/(a\/macros\/[\w.-]+\/|macros\/)s\/[\w-]+\/exec$/.test(pathname) ? url : null;
+}
+
+/** The reservation form's settings, or null (button hidden) when not configured. */
+export function normalizeReservation(raw) {
+  const r = raw?.reservation;
+  if (!isObj(r)) return null;
+  const endpoint = scriptEndpoint(r.endpoint);
+  const blocs = (Array.isArray(r.blocs) ? r.blocs : [])
+    .filter((b) => isObj(b) && isText(b.bloc) && b.bloc.trim() && b.bloc.trim().length <= MAX_BLOC)
+    .map((b) => ({
+      bloc: b.bloc.trim(),
+      rooms: (Array.isArray(b.rooms) ? b.rooms : [])
+        .filter(isText)
+        .map((x) => x.trim())
+        .filter((x) => x && x.length <= MAX_ROOM),
+    }));
+  if (!endpoint || !blocs.length) return null;
+  return { endpoint, lastDay: isText(r.lastDay) && ISO_DAY.test(r.lastDay) ? r.lastDay : '2026-12-02', blocs };
+}
+
 const objOrNull = (v) => (v !== null && typeof v === 'object' && !Array.isArray(v) ? v : null);
-const shape = (raw) => ({ event: objOrNull(raw?.event), contact: objOrNull(raw?.contact), stands: normalizeStands(raw) });
+const shape = (raw) => ({
+  event: objOrNull(raw?.event),
+  contact: objOrNull(raw?.contact),
+  stands: normalizeStands(raw),
+  reservation: normalizeReservation(raw), // in-site form settings; null hides the button
+});
 
 /**
  * Fetches data.json fresh (no stale cache after an edit). On a bad network it
