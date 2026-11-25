@@ -908,7 +908,7 @@ body.reserve-open { overflow: hidden; }
   font-size: 14px;
   box-shadow: 0 0 12px rgba(242, 193, 91, 0.5);
 }
-.rf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rf-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .rf-field { display: grid; gap: 6px; min-width: 0; }
 .rf-label {
   font-size: 12px;
@@ -945,7 +945,7 @@ body.reserve-open { overflow: hidden; }
 .rf-field.has-error input,
 .rf-field.has-error select { border-color: #ff8f7f; }
 .rf-phone { display: flex; }
-.rf-room { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rf-room { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .rf-room select:disabled { opacity: 0.55; }
 .rf-prefix {
   display: grid;
@@ -961,7 +961,7 @@ body.reserve-open { overflow: hidden; }
 .rf-phone input { border-radius: 0 14px 14px 0 !important; }
 
 /* bloc chips */
-.rf-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.rf-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .rf-chip { position: relative; cursor: pointer; }
 .rf-chip input { position: absolute; opacity: 0; pointer-events: none; }
 .rf-chip span {
@@ -1070,6 +1070,23 @@ body.reserve-open { overflow: hidden; }
 .rf-dancer { width: 100%; height: 100%; }
 .rf-done-title { margin: 6px 0 0; font-family: var(--font-party); font-size: 30px; color: var(--gold-light); text-shadow: 0 0 14px rgba(242, 193, 91, 0.6); }
 .rf-done-line { margin: 0; max-width: 360px; color: var(--cream); font-size: 16px; line-height: 1.5; }
+/* iPhone Safari gives date/time fields their own minimum width and pushes them out of
+   their column; strip the native look so they obey the grid like the other fields */
+.rf-form input[type='date'],
+.rf-form input[type='time'] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  text-align: left;
+}
+.rf-form input[type='date']::-webkit-date-and-time-value,
+.rf-form input[type='time']::-webkit-date-and-time-value {
+  margin: 0;
+  text-align: left;
+}
+.rf-form select { min-width: 0; max-width: 100%; text-overflow: ellipsis; }
 @media (max-width: 360px) {
   .rf-row { grid-template-columns: 1fr; }
   .rf-chip span { font-size: 17px; }
