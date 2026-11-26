@@ -83,6 +83,10 @@ describe('reservation Apps Script', () => {
     expect(g.rows[1]).not.toContain("'211JMT1234");
   });
 
+  it('opening the link shows which version is live', () => {
+    expect(JSON.parse(g.context.doGet().text)).toEqual({ ok: true, service: 'shik-shak-shok-reservations', version: 'sans-identifiant' });
+  });
+
   it('honeypot filled → ok but nothing written', () => {
     expect(post(g, { ...good, website: 'spam.example' })).toEqual({ ok: true });
     expect(g.rows.slice(1)).toHaveLength(0);

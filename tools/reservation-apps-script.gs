@@ -11,6 +11,8 @@
  * and no cell can start like a formula.
  */
 
+/** shown by the /exec link in a browser, so anyone can see which code is live */
+var VERSION = 'sans-identifiant';
 var SHEET_NAME = 'Réservations';
 var HEADERS = ['Reçu le', 'Nom', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure', 'Statut', 'Livré par', 'Notes'];
 var STATUSES = ['À livrer', 'Livré', 'Annulé'];
@@ -98,7 +100,7 @@ function doPost(e) {
 
 /** Opening the /exec link in a browser just says the service is up. */
 function doGet() {
-  return json_({ ok: true, service: 'shik-shak-shok-reservations' });
+  return json_({ ok: true, service: 'shik-shak-shok-reservations', version: VERSION });
 }
 
 /** Run once from the editor: header style, frozen row, Statut dropdown + colours. */
