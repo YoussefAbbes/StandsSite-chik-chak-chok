@@ -2,7 +2,6 @@
 // The Google script re-checks everything: these rules are for helpful messages.
 import { normalizePhone } from './data.js';
 
-const ID = /^[A-Z0-9]{3,20}$/;
 const ROOM = /^[A-Z]{1,3} ?\d{1,2}-\d{1,2}$/;
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -22,7 +21,6 @@ const text = (v) => (typeof v === 'string' ? v.trim() : '');
 export function validateReservation(values, { today, lastDay, blocs }) {
   const errors = {};
   const name = text(values.name).replace(/\s+/g, ' ');
-  const studentId = text(values.studentId).toUpperCase();
   const phone = normalizePhone(values.phone);
   const bloc = blocs.find((b) => b.bloc === values.bloc);
   const rawSalle = text(values.salle).toUpperCase().replace(/\s+/g, ' ');
@@ -30,7 +28,6 @@ export function validateReservation(values, { today, lastDay, blocs }) {
   const time = text(values.time);
 
   if (name.length < 2 || name.length > 60) errors.name = 'Écris ton nom et prénom.';
-  if (!ID.test(studentId)) errors.studentId = 'Identifiant ESPRIT invalide (lettres et chiffres, sans espace).';
   if (!phone) errors.phone = 'Numéro à 8 chiffres, ex. 25 615 375.';
   if (!bloc) errors.bloc = 'Choisis ton bloc.';
   else if (bloc.rooms.length ? !bloc.rooms.includes(text(values.salle)) : !ROOM.test(rawSalle)) {
@@ -50,7 +47,7 @@ export function validateReservation(values, { today, lastDay, blocs }) {
   return {
     ok,
     errors,
-    data: { name, studentId, phone: digits, bloc: bloc.bloc, salle, day, time, website: text(values.website) },
+    data: { name, phone: digits, bloc: bloc.bloc, salle, day, time, website: text(values.website) },
   };
 }
 

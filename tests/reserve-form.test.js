@@ -7,7 +7,7 @@ const blocs = [
 ];
 const ctx = { today: '2026-11-26', lastDay: '2026-12-02', blocs };
 const good = {
-  name: 'Amira Ben Salah', studentId: '211JMT1234', phone: '25 615 375', bloc: 'Bloc C', salle: 'C 1-1',
+  name: 'Amira Ben Salah', phone: '25 615 375', bloc: 'Bloc C', salle: 'C 1-1',
   day: '2026-11-28', time: '10:30', pay: true, website: '',
 };
 const errs = (over) => validateReservation({ ...good, ...over }, ctx).errors;
@@ -16,15 +16,17 @@ describe('validateReservation', () => {
   it('accepts a complete reservation and normalises it', () => {
     const r = validateReservation(good, ctx);
     expect(r.ok).toBe(true);
-    expect(r.data).toEqual({ name: 'Amira Ben Salah', studentId: '211JMT1234', phone: '25615375', bloc: 'Bloc C', salle: 'C 1-1', day: '2026-11-28', time: '10:30', website: '' });
+    expect(r.data).toEqual({ name: 'Amira Ben Salah', phone: '25615375', bloc: 'Bloc C', salle: 'C 1-1', day: '2026-11-28', time: '10:30', website: '' });
   });
   it('name: 2–60 characters', () => {
     expect(errs({ name: ' A ' }).name).toBeTruthy();
     expect(errs({ name: 'x'.repeat(61) }).name).toBeTruthy();
   });
-  it('student ID: 3–20 letters/digits', () => {
-    for (const bad of ['', 'ab', '211 JMT', '12345678901234567890X', '211-JMT']) expect(errs({ studentId: bad }).studentId).toBeTruthy();
-    expect(validateReservation({ ...good, studentId: ' 211jmt1234 ' }, ctx).data.studentId).toBe('211JMT1234');
+  it('no student ID: never asked, never sent', () => {
+    const r = validateReservation({ ...good, studentId: '211JMT1234' }, ctx);
+    expect(r.ok).toBe(true);
+    expect(r.errors.studentId).toBeUndefined();
+    expect(r.data).not.toHaveProperty('studentId');
   });
   it('phone: 8 Tunisian digits in any spelling', () => {
     expect(errs({ phone: '1234' }).phone).toBeTruthy();
@@ -64,7 +66,7 @@ describe('validateReservation', () => {
 });
 
 describe('submitReservation', () => {
-  const data = { name: 'A B', studentId: 'X123' };
+  const data = { name: 'A B', phone: '25615375' };
   const res = (body) => Promise.resolve({ ok: true, text: () => Promise.resolve(body) });
 
   it('POSTs the data once as text/plain JSON', async () => {

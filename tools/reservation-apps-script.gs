@@ -7,14 +7,15 @@
  * Full guide: tools/RESERVATION_SETUP.md
  *
  * Security: the link is public, so every request is treated as untrusted:
- * size limit, field checks, bot trap, one reservation per student ID (under a lock),
+ * size limit, field checks, bot trap, one reservation per phone number (under a lock),
  * and no cell can start like a formula.
  */
 
 var SHEET_NAME = 'Réservations';
-var HEADERS = ['Reçu le', 'Nom', 'Identifiant', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure', 'Statut', 'Livré par', 'Notes'];
+var HEADERS = ['Reçu le', 'Nom', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure', 'Statut', 'Livré par', 'Notes'];
 var STATUSES = ['À livrer', 'Livré', 'Annulé'];
 var MAX_BODY = 5000;
+var PHONE_COL = 3; // column C
 
 /**
  * Every typed value is stored as plain text: a leading ' stops formulas (= + - @)
@@ -30,7 +31,6 @@ function validatePayload(p) {
   var str = function (v) { return typeof v === 'string' ? v.trim() : ''; };
   var name = str(p.name);
   if (name.length < 2 || name.length > 60) return 'name';
-  if (!/^[A-Za-z0-9]{3,20}$/.test(str(p.studentId))) return 'studentId';
   if (!/^\d{8}$/.test(str(p.phone))) return 'phone';
   if (!str(p.bloc) || str(p.bloc).length > 20) return 'bloc';
   if (!str(p.salle) || str(p.salle).length > 12) return 'salle';
@@ -65,23 +65,22 @@ function doPost(e) {
   if (p && p.website) return json_({ ok: true }); // bot trap: pretend it worked, write nothing
   if (validatePayload(p)) return json_({ ok: false, error: 'invalid' });
 
-  var id = String(p.studentId).trim().toUpperCase();
+  var phone = p.phone.trim();
   var lock = LockService.getScriptLock();
   lock.waitLock(10000); // two submissions at the same second are checked one after the other
   try {
     var sheet = getSheet_();
     var last = sheet.getLastRow();
-    var ids = last > 1 ? sheet.getRange(2, 3, last - 1, 1).getValues() : [];
-    for (var i = 0; i < ids.length; i++) {
-      if (String(ids[i][0]).replace(/^'/, '').trim().toUpperCase() === id) {
+    var phones = last > 1 ? sheet.getRange(2, PHONE_COL, last - 1, 1).getValues() : [];
+    for (var i = 0; i < phones.length; i++) {
+      if (String(phones[i][0]).replace(/^'/, '').trim() === phone) {
         return json_({ ok: false, error: 'duplicate' });
       }
     }
     sheet.appendRow([
       new Date(),
       escapeCell(p.name.trim()),
-      escapeCell(id),
-      escapeCell(p.phone.trim()),
+      escapeCell(phone),
       escapeCell(p.bloc.trim()),
       escapeCell(p.salle.trim()),
       escapeCell(p.day.trim()), // ISO text sorts correctly
@@ -107,7 +106,7 @@ function setup() {
   var sheet = getSheet_();
   sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold').setBackground('#f2c15b');
   sheet.setFrozenRows(1);
-  var statusRange = sheet.getRange(2, 9, sheet.getMaxRows() - 1, 1);
+  var statusRange = sheet.getRange(2, HEADERS.indexOf('Statut') + 1, sheet.getMaxRows() - 1, 1);
   statusRange.setDataValidation(
     SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).setAllowInvalid(false).build()
   );
@@ -115,5 +114,5 @@ function setup() {
     return SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(text).setBackground(bg).setRanges([statusRange]).build();
   };
   sheet.setConditionalFormatRules([colour('À livrer', '#ffd8a8'), colour('Livré', '#b7e4c7'), colour('Annulé', '#d9d9d9')]);
-  [150, 170, 120, 110, 80, 80, 100, 70, 100, 120, 200].forEach(function (w, i) { sheet.setColumnWidth(i + 1, w); });
+  [150, 170, 110, 80, 80, 100, 70, 100, 120, 200].forEach(function (w, i) { sheet.setColumnWidth(i + 1, w); });
 }

@@ -26,7 +26,7 @@ const COPY = {
   sending: 'Envoi…',
   done: "C'est noté 💃 !",
   doneLine: (salle, day, time) => `Un membre de l'équipe passera te voir en salle ${salle} le ${formatDayFr(day)} à ${time}. Prépare 20 DT.`,
-  duplicate: "Tu as déjà une réservation avec cet identifiant. Contacte l'équipe si tu veux la modifier.",
+  duplicate: "Tu as déjà une réservation avec ce numéro. Contacte l'équipe si tu veux la modifier.",
   network: "Oups, la réservation n'est pas passée. Réessaie, ou appelle l'équipe :",
   invalid: "Ta réservation n'a pas pu être enregistrée. Appelle l'équipe :",
 };
@@ -122,9 +122,6 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
       field('name', 'Nom et prénom', el('input', {
         id: 'rf-name', name: 'name', type: 'text', autocomplete: 'name', maxlength: '60', placeholder: 'Youssef Abbes', required: true,
       })),
-      field('studentId', 'Identifiant ESPRIT', el('input', {
-        id: 'rf-studentId', name: 'studentId', type: 'text', autocomplete: 'off', autocapitalize: 'characters', maxlength: '20', placeholder: 'ex. 211JMT1234', required: true,
-      })),
       field('phone', 'Téléphone', el('div', { class: 'rf-phone' }, [
         el('span', { class: 'rf-prefix', text: '+216' }),
         el('input', {
@@ -195,7 +192,6 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
 
   const values = () => ({
     name: form.elements.name.value,
-    studentId: form.elements.studentId.value,
     phone: form.elements.phone.value,
     bloc: selectedBloc(),
     salle: roomCode(),

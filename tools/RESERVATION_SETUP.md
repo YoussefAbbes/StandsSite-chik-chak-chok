@@ -33,7 +33,7 @@ The Sheet stays private.
 **Share** (top right) → add each team member → **Editor**.
 Each reservation appears as a new row within seconds:
 
-`Reçu le · Nom · Identifiant · Téléphone · Bloc · Salle · Jour · Heure · Statut · Livré par · Notes`
+`Reçu le · Nom · Téléphone · Bloc · Salle · Jour · Heure · Statut · Livré par · Notes`
 
 Team routine: sort by **Jour** then **Heure**, deliver, set **Statut** to **Livré**
 (green) and write your name in **Livré par**. **Annulé** turns grey.

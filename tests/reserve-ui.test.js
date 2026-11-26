@@ -26,7 +26,6 @@ function fill({ bloc = 'Bloc C', salle = 'C 1-2', etage, num } = {}) {
     el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
   };
   set('name', 'Amira Ben Salah');
-  set('studentId', '211JMT1234');
   set('phone', '25615375');
   pickBloc(bloc);
   if (etage !== undefined) { set('etage', etage); set('salleNum', num); } else set('salle', salle);
@@ -72,10 +71,12 @@ describe('openReserveSheet', () => {
     open();
     const t = $('.reserve-sheet').textContent;
     for (const s of ['احجز تذكرتك', 'Réserve ton ticket', '20 DT · payé à la remise', 'Toi', 'Où', 'Quand',
-      'Nom et prénom', 'Identifiant ESPRIT', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure',
+      'Nom et prénom', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure',
       'Je paierai 20 DT en espèces à la remise du ticket']) {
       expect(t).toContain(s);
     }
+    expect(t).not.toContain('Identifiant');
+    expect($('.reserve-sheet [name="studentId"]')).toBeNull();
     expect($('.reserve-sheet input[name="day"]').min).toBe('2026-11-26');
     expect($('.reserve-sheet input[name="day"]').max).toBe('2026-12-02');
     expect(document.body.classList.contains('reserve-open')).toBe(true);
@@ -193,7 +194,8 @@ describe('openReserveSheet', () => {
     fill();
     submitBtn().click();
     await flush(); await flush();
-    expect(submit.mock.calls[0][0]).toMatchObject({ studentId: '211JMT1234', bloc: 'Bloc C', salle: 'C 1-2', day: '2026-11-28', time: '10:30', phone: '25615375', website: '' });
+    expect(submit.mock.calls[0][0]).not.toHaveProperty('studentId');
+    expect(submit.mock.calls[0][0]).toMatchObject({ name: 'Amira Ben Salah', bloc: 'Bloc C', salle: 'C 1-2', day: '2026-11-28', time: '10:30', phone: '25615375', website: '' });
     const t = $('.reserve-sheet').textContent;
     expect(t).toContain("C'est noté 💃 !");
     expect(t).toContain("Un membre de l'équipe passera te voir en salle C 1-2 le 28/11 à 10:30. Prépare 20 DT.");
@@ -204,7 +206,7 @@ describe('openReserveSheet', () => {
     fill();
     submitBtn().click();
     await flush(); await flush();
-    expect($('.reserve-sheet').textContent).toContain("Tu as déjà une réservation avec cet identifiant. Contacte l'équipe si tu veux la modifier.");
+    expect($('.reserve-sheet').textContent).toContain("Tu as déjà une réservation avec ce numéro. Contacte l'équipe si tu veux la modifier.");
     expect($('.reserve-sheet a[href="tel:+21695195235"]')).not.toBeNull();
   });
 
@@ -215,7 +217,7 @@ describe('openReserveSheet', () => {
     await flush(); await flush();
     expect($('.reserve-sheet').textContent).toContain("Oups, la réservation n'est pas passée. Réessaie, ou appelle l'équipe :");
     expect($('.reserve-sheet a[href="tel:+21695195235"]')).not.toBeNull();
-    expect($('.reserve-sheet [name="studentId"]').value).toBe('211JMT1234');
+    expect($('.reserve-sheet [name="phone"]').value).toBe('25615375');
     expect(submitBtn().disabled).toBe(false);
   });
 
