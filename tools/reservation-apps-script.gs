@@ -12,12 +12,13 @@
  */
 
 /** shown by the /exec link in a browser, so anyone can see which code is live */
-var VERSION = 'sans-identifiant';
+var VERSION = 'tickets';
 var SHEET_NAME = 'Réservations';
-var HEADERS = ['Reçu le', 'Nom', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure', 'Statut', 'Livré par', 'Notes'];
+var HEADERS = ['Reçu le', 'Nom', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure', 'Tickets', 'Statut', 'Livré par', 'Notes'];
 var STATUSES = ['À livrer', 'Livré', 'Annulé'];
 var MAX_BODY = 5000;
 var PHONE_COL = 3; // column C
+var MAX_TICKETS = 10;
 
 /**
  * Every typed value is stored as plain text: a leading ' stops formulas (= + - @)
@@ -31,9 +32,20 @@ function escapeCell(value) {
 function validatePayload(p) {
   if (!p || typeof p !== 'object') return 'invalid';
   var str = function (v) { return typeof v === 'string' ? v.trim() : ''; };
-  var name = str(p.name);
+  var name = str(p.name).replace(/\s+/g, ' ');
   if (name.length < 2 || name.length > 60) return 'name';
-  if (!/^\d{8}$/.test(str(p.phone))) return 'phone';
+  // first name + last name: 2+ words of 2+ characters, no digits, not "Hh"
+  var words = name.split(' ');
+  if (words.length < 2 || /\d/.test(name)) return 'name';
+  for (var i = 0; i < words.length; i++) {
+    if (words[i].length < 2 || /^(.)\1+$/i.test(words[i])) return 'name';
+  }
+  // Tunisian line: starts with 2/3/4/5/7/9, and not 8 times the same digit
+  var phone = str(p.phone);
+  if (!/^[234579]\d{7}$/.test(phone) || /^(\d)\1{7}$/.test(phone)) return 'phone';
+  // an old cached page sends no count: it meant one ticket
+  var tickets = p.tickets === undefined ? 1 : p.tickets;
+  if (typeof tickets !== 'number' || tickets % 1 !== 0 || tickets < 1 || tickets > MAX_TICKETS) return 'tickets';
   if (!str(p.bloc) || str(p.bloc).length > 20) return 'bloc';
   if (!str(p.salle) || str(p.salle).length > 12) return 'salle';
   if (!/^\d{4}-\d{2}-\d{2}$/.test(str(p.day))) return 'day';
@@ -55,6 +67,18 @@ function getSheet_() {
   return sheet;
 }
 
+/**
+ * Sheets made before the ticket count have no "Tickets" column: add it after "Heure"
+ * (Statut and its dropdown/colours move one column right with it). Runs once, then finds it.
+ */
+function ensureTicketsColumn_(sheet) {
+  var header = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  if (header.indexOf('Tickets') !== -1) return;
+  var heure = header.indexOf('Heure') + 1; // 1-based column of "Heure"
+  sheet.insertColumnAfter(heure);
+  sheet.getRange(1, heure + 1).setValue('Tickets').setFontWeight('bold').setBackground('#f2c15b');
+}
+
 function doPost(e) {
   var body = e && e.postData && e.postData.contents;
   if (!body || body.length > MAX_BODY) return json_({ ok: false, error: 'invalid' });
@@ -72,6 +96,7 @@ function doPost(e) {
   lock.waitLock(10000); // two submissions at the same second are checked one after the other
   try {
     var sheet = getSheet_();
+    ensureTicketsColumn_(sheet);
     var last = sheet.getLastRow();
     var phones = last > 1 ? sheet.getRange(2, PHONE_COL, last - 1, 1).getValues() : [];
     for (var i = 0; i < phones.length; i++) {
@@ -87,6 +112,7 @@ function doPost(e) {
       escapeCell(p.salle.trim()),
       escapeCell(p.day.trim()), // ISO text sorts correctly
       escapeCell(p.time.trim()),
+      p.tickets === undefined ? 1 : p.tickets, // checked whole number 1–10, kept as a number so the column can be summed
       STATUSES[0],
       '',
       '',
@@ -106,6 +132,7 @@ function doGet() {
 /** Run once from the editor: header style, frozen row, Statut dropdown + colours. */
 function setup() {
   var sheet = getSheet_();
+  ensureTicketsColumn_(sheet);
   sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold').setBackground('#f2c15b');
   sheet.setFrozenRows(1);
   var statusRange = sheet.getRange(2, HEADERS.indexOf('Statut') + 1, sheet.getMaxRows() - 1, 1);
@@ -116,5 +143,5 @@ function setup() {
     return SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(text).setBackground(bg).setRanges([statusRange]).build();
   };
   sheet.setConditionalFormatRules([colour('À livrer', '#ffd8a8'), colour('Livré', '#b7e4c7'), colour('Annulé', '#d9d9d9')]);
-  [150, 170, 110, 80, 80, 100, 70, 100, 120, 200].forEach(function (w, i) { sheet.setColumnWidth(i + 1, w); });
+  [150, 170, 110, 80, 80, 100, 70, 70, 100, 120, 200].forEach(function (w, i) { sheet.setColumnWidth(i + 1, w); });
 }

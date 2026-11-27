@@ -8,6 +8,10 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
 /** the team delivers tickets between these hours */
 export const FIRST_TIME = '08:00';
 export const LAST_TIME = '23:00';
+/** most tickets one reservation can ask for (the team carries them by hand) */
+export const MAX_TICKETS = 10;
+/** one ticket */
+export const TICKET_PRICE_DT = 20;
 
 /** cold start + up to 10 s waiting for the script lock can exceed 15 s */
 export const DEFAULT_TIMEOUT_MS = 30000;
@@ -42,9 +46,13 @@ export function validateReservation(values, { today, lastDay, blocs }) {
   const rawSalle = text(values.salle).toUpperCase().replace(/\s+/g, ' ');
   const day = text(values.day);
   const time = text(values.time);
+  // whole number only: "2.5", "1e1" or "-1" are refused, not rounded
+  const ticketsText = text(String(values.tickets ?? ''));
+  const tickets = /^\d{1,2}$/.test(ticketsText) ? Number(ticketsText) : 0;
 
   if (!isFullName(name)) errors.name = 'Écris ton prénom et ton nom (ex. Amina Sehimi).';
   if (!phone || !isRealTunisianNumber(phone.tel.replace('tel:+216', ''))) errors.phone = 'Numéro tunisien à 8 chiffres, ex. 25 615 375.';
+  if (tickets < 1 || tickets > MAX_TICKETS) errors.tickets = `Entre 1 et ${MAX_TICKETS} tickets.`;
   if (!bloc) {
     errors.bloc = 'Choisis ton bloc.';
     errors.salle = 'Choisis ton bloc, puis l’étage et la salle.';
@@ -65,7 +73,7 @@ export function validateReservation(values, { today, lastDay, blocs }) {
   return {
     ok,
     errors,
-    data: { name, phone: digits, bloc: bloc.bloc, salle, day, time, website: text(values.website) },
+    data: { name, phone: digits, bloc: bloc.bloc, salle, day, time, website: text(values.website), tickets },
   };
 }
 

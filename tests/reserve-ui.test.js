@@ -70,9 +70,9 @@ describe('openReserveSheet', () => {
   it('shows the labels, the three steps, the price badge and the payment checkbox', () => {
     open();
     const t = $('.reserve-sheet').textContent;
-    for (const s of ['احجز تذكرتك', 'Réserve ton ticket', '20 DT · payé à la remise', 'Toi', 'Où', 'Quand',
+    for (const s of ['احجز تذكرتك', 'Réserve ton ticket', '20 dinars par ticket · payé à la remise', 'Toi', 'Où', 'Quand',
       'Nom et prénom', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure',
-      'Je paierai 20 DT en espèces à la remise du ticket']) {
+      'Je paierai mon ticket en espèces à la remise']) {
       expect(t).toContain(s);
     }
     expect(t).not.toContain('Identifiant');
@@ -328,5 +328,65 @@ describe('iPhone: a wrong field never grabs the cursor on submit', () => {
     expect(submit).not.toHaveBeenCalled();
     expect(document.activeElement).not.toBe(phone);
     expect($('.reserve-sheet .rf-summary').textContent).toContain('Téléphone');
+  });
+});
+
+describe('number of tickets', () => {
+  const open = (submit = vi.fn(() => Promise.resolve({ ok: true }))) =>
+    ({ submit, sheet: openReserveSheet(reservation, { phones, today: '2026-11-26', submit }) });
+  const tickets = () => $('.reserve-sheet [name="tickets"]');
+  const plus = () => $('.reserve-sheet [aria-label="Un ticket de plus"]');
+  const minus = () => $('.reserve-sheet [aria-label="Un ticket de moins"]');
+  const total = () => $('.reserve-sheet .rf-total').textContent;
+  const payText = () => $('.reserve-sheet .rf-check-text').textContent;
+  const type = (value) => { tickets().value = value; tickets().dispatchEvent(new Event('input', { bubbles: true })); };
+
+  it('starts at 1 ticket, 20 DT, and the student can type the number', () => {
+    open();
+    expect($('.reserve-sheet').textContent).toContain('Nombre de tickets');
+    expect(tickets().value).toBe('1');
+    expect(tickets().getAttribute('inputmode')).toBe('numeric');
+    expect(total()).toBe('Total : 20 DT');
+    expect(payText()).toBe('Je paierai mon ticket en espèces à la remise');
+  });
+
+  it('+ and − change the count between 1 and 10, never submit the form', async () => {
+    const { submit } = open();
+    plus().click(); plus().click(); plus().click();
+    expect(tickets().value).toBe('4');
+    expect(total()).toBe('Total : 80 DT');
+    expect(payText()).toBe('Je paierai mes 4 tickets en espèces à la remise');
+    for (let i = 0; i < 12; i++) plus().click();
+    expect(tickets().value).toBe('10');
+    for (let i = 0; i < 12; i++) minus().click();
+    expect(tickets().value).toBe('1');
+    await flush();
+    expect(submit).not.toHaveBeenCalled();
+  });
+
+  it('a typed count is sent as a number and shown on the thank-you screen', async () => {
+    const { submit } = open();
+    fill();
+    type('3');
+    expect(total()).toBe('Total : 60 DT');
+    submitBtn().click();
+    await flush(); await flush();
+    expect(submit.mock.calls[0][0]).toMatchObject({ tickets: 3 });
+    const t = $('.reserve-sheet').textContent;
+    expect(t).toContain('avec tes 3 tickets');
+    expect(t).toContain('Prépare 60 DT');
+  });
+
+  it('15 or an empty box → listed as wrong, nothing sent', async () => {
+    const { submit } = open();
+    fill();
+    type('15');
+    submitBtn().click();
+    await flush();
+    expect(submit).not.toHaveBeenCalled();
+    expect($('.reserve-sheet [data-error-for="tickets"]').textContent).toBe('Entre 1 et 10 tickets.');
+    expect($('.reserve-sheet .rf-summary').textContent).toContain('Nombre de tickets');
+    type('');
+    expect(total()).toBe('Total : —');
   });
 });

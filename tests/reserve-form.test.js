@@ -8,7 +8,7 @@ const blocs = [
 const ctx = { today: '2026-11-26', lastDay: '2026-12-02', blocs };
 const good = {
   name: 'Amira Ben Salah', phone: '25 615 375', bloc: 'Bloc C', salle: 'C 1-1',
-  day: '2026-11-28', time: '10:30', pay: true, website: '',
+  day: '2026-11-28', time: '10:30', pay: true, website: '', tickets: '1',
 };
 const errs = (over) => validateReservation({ ...good, ...over }, ctx).errors;
 
@@ -16,7 +16,7 @@ describe('validateReservation', () => {
   it('accepts a complete reservation and normalises it', () => {
     const r = validateReservation(good, ctx);
     expect(r.ok).toBe(true);
-    expect(r.data).toEqual({ name: 'Amira Ben Salah', phone: '25615375', bloc: 'Bloc C', salle: 'C 1-1', day: '2026-11-28', time: '10:30', website: '' });
+    expect(r.data).toEqual({ name: 'Amira Ben Salah', phone: '25615375', bloc: 'Bloc C', salle: 'C 1-1', day: '2026-11-28', time: '10:30', website: '', tickets: 1 });
   });
   it('name: 2–60 characters', () => {
     expect(errs({ name: ' A ' }).name).toBeTruthy();
@@ -116,6 +116,19 @@ describe('stricter checks (rows like "Hh" / 88888888 reached the Sheet)', () => 
     }
     for (const ok of ['52563987', '95195124', '25642354', '41234567', '71234567', '31234567']) {
       expect(errs({ phone: ok }).phone, ok).toBeUndefined();
+    }
+  });
+});
+
+describe('number of tickets', () => {
+  it('1 to 10 tickets, sent as a number', () => {
+    expect(validateReservation({ ...good, tickets: '3' }, ctx).data.tickets).toBe(3);
+    expect(validateReservation({ ...good, tickets: ' 10 ' }, ctx).data.tickets).toBe(10);
+    expect(validateReservation({ ...good, tickets: 2 }, ctx).data.tickets).toBe(2);
+  });
+  it('empty, 0, more than 10, decimals, letters or negatives are refused', () => {
+    for (const bad of ['', '0', '11', '2.5', '2,5', 'abc', '-1', '1e1', undefined]) {
+      expect(errs({ tickets: bad }).tickets, String(bad)).toBe('Entre 1 et 10 tickets.');
     }
   });
 });

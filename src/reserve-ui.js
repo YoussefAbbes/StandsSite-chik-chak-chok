@@ -1,6 +1,8 @@
 // The in-site reservation sheet: velvet card, gold arch, party fonts.
 // DOM only through createElement/textContent (values typed by students are never parsed as HTML).
-import { validateReservation, submitReservation, formatDayFr, FIRST_TIME, LAST_TIME } from './reserve-form.js';
+import {
+  validateReservation, submitReservation, formatDayFr, FIRST_TIME, LAST_TIME, MAX_TICKETS, TICKET_PRICE_DT,
+} from './reserve-form.js';
 import { playSilhouette } from './intro.js';
 import { icon } from './icons.js';
 
@@ -19,13 +21,15 @@ function el(tag, props = {}, children = []) {
 const COPY = {
   ar: 'احجز تذكرتك',
   title: 'Réserve ton ticket',
-  badge: '20 DT · payé à la remise',
+  badge: `${TICKET_PRICE_DT} dinars par ticket · payé à la remise`,
   intro: 'Un membre de l’équipe t’apporte ton ticket dans ta salle, à l’heure que tu choisis.',
-  pay: 'Je paierai 20 DT en espèces à la remise du ticket',
+  pay: (n) => `Je paierai ${n > 1 ? `mes ${n} tickets` : 'mon ticket'} en espèces à la remise`,
+  total: (n) => `Total : ${n ? `${n * TICKET_PRICE_DT} DT` : '—'}`,
   submit: 'Réserver',
   sending: 'Envoi…',
   done: "C'est noté 💃 !",
-  doneLine: (salle, day, time) => `Un membre de l'équipe passera te voir en salle ${salle} le ${formatDayFr(day)} à ${time}. Prépare 20 DT.`,
+  doneLine: ({ salle, day, time, tickets }) => `Un membre de l'équipe passera te voir en salle ${salle} le ${formatDayFr(day)} à ${time}`
+    + `${tickets > 1 ? ` avec tes ${tickets} tickets` : ''}. Prépare ${tickets * TICKET_PRICE_DT} DT.`,
   duplicate: "Tu as déjà une réservation avec ce numéro. Contacte l'équipe si tu veux la modifier.",
   network: "Oups, la réservation n'est pas passée. Réessaie, ou appelle l'équipe :",
   invalid: "Ta réservation n'a pas pu être enregistrée. Appelle l'équipe :",
@@ -34,7 +38,7 @@ const COPY = {
 
 /** field → name shown in the "il manque" list, in form order */
 const LABELS = {
-  name: 'Nom et prénom', phone: 'Téléphone', bloc: 'Bloc', salle: 'Salle', day: 'Jour', time: 'Heure', pay: 'Paiement (case à cocher)',
+  name: 'Nom et prénom', phone: 'Téléphone', tickets: 'Nombre de tickets', bloc: 'Bloc', salle: 'Salle', day: 'Jour', time: 'Heure', pay: 'Paiement (case à cocher)',
 };
 
 /** Local date as YYYY-MM-DD (not UTC: late-evening students must not get tomorrow's date). */
@@ -121,6 +125,35 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
   renderSalle();
   chips.addEventListener('change', renderSalle);
 
+  // ticket count: typed, or − / + (big targets for thumbs); total and payment line follow it
+  const ticketsInput = el('input', {
+    id: 'rf-tickets', name: 'tickets', type: 'number', inputmode: 'numeric', min: '1', max: String(MAX_TICKETS), step: '1', value: '1', required: true,
+  });
+  const stepBtn = (text, label, delta) => {
+    const b = el('button', { type: 'button', class: 'rf-step-btn', 'aria-label': label, text });
+    b.addEventListener('click', () => {
+      const n = Number.parseInt(ticketsInput.value, 10) || 0;
+      ticketsInput.value = String(Math.min(MAX_TICKETS, Math.max(1, n + delta)));
+      updateTotal();
+    });
+    return b;
+  };
+  const totalLine = el('p', { class: 'rf-total', 'aria-live': 'polite' });
+  const payText = el('span', { class: 'rf-check-text' });
+  /** the count when it is a whole number from 1 to MAX_TICKETS, else 0 */
+  const ticketCount = () => {
+    const v = ticketsInput.value.trim();
+    const n = /^\d{1,2}$/.test(v) ? Number(v) : 0;
+    return n >= 1 && n <= MAX_TICKETS ? n : 0;
+  };
+  function updateTotal() {
+    const n = ticketCount();
+    totalLine.textContent = COPY.total(n);
+    payText.textContent = COPY.pay(n || 1);
+  }
+  ticketsInput.addEventListener('input', updateTotal);
+  updateTotal();
+
   const submitBtn = el('button', { type: 'submit', class: 'btn btn-reserve rf-submit' }, [icon('ticket'), el('span', { text: COPY.submit })]);
   const status = el('div', { class: 'rf-status', role: 'status', 'aria-live': 'polite' });
   // right above the button: on a phone the inline errors are scrolled away, this is what the student sees
@@ -135,6 +168,10 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
         el('input', {
           id: 'rf-phone', name: 'phone', type: 'tel', inputmode: 'numeric', autocomplete: 'tel-national', maxlength: '20', required: true,
         }),
+      ])),
+      field('tickets', 'Nombre de tickets', el('div', { class: 'rf-tickets' }, [
+        el('div', { class: 'rf-stepper' }, [stepBtn('−', 'Un ticket de moins', -1), ticketsInput, stepBtn('+', 'Un ticket de plus', 1)]),
+        totalLine,
       ])),
     ]),
     step(2, 'Où', [
@@ -155,7 +192,7 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
       el('label', {}, [
         el('input', { type: 'checkbox', name: 'pay' }),
         el('span', { class: 'rf-check-box', 'aria-hidden': 'true' }),
-        el('span', { class: 'rf-check-text', text: COPY.pay }),
+        payText,
       ]),
       el('p', { class: 'rf-error', 'data-error-for': 'pay', role: 'alert' }),
     ]),
@@ -207,6 +244,7 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
     time: form.elements.time.value,
     pay: form.elements.pay.checked,
     website: form.elements.website.value,
+    tickets: ticketsInput.value,
   });
 
   /** the control to put the cursor in for each field (salle is a list or étage + numéro) */
@@ -250,7 +288,7 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
       el('div', { class: 'rf-done' }, [
         el('div', { class: 'rf-halo' }, [canvas]),
         el('p', { class: 'rf-done-title', text: COPY.done }),
-        el('p', { class: 'rf-done-line', text: COPY.doneLine(data.salle, data.day, data.time) }),
+        el('p', { class: 'rf-done-line', text: COPY.doneLine(data) }),
         el('button', { type: 'button', class: 'btn btn-reserve rf-ok', text: 'Super !' }),
       ]),
     );

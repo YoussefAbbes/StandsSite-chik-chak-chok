@@ -921,6 +921,7 @@ body.reserve-open { overflow: hidden; }
 .rf-form input[type='tel'],
 .rf-form input[type='date'],
 .rf-form input[type='time'],
+.rf-form input[type='number'],
 .rf-form select {
   width: 100%;
   min-height: 50px;
@@ -959,6 +960,35 @@ body.reserve-open { overflow: hidden; }
   font-weight: 600;
 }
 .rf-phone input { border-radius: 0 14px 14px 0 !important; }
+
+/* ticket count: − [ n ] +  then the total */
+.rf-tickets { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.rf-stepper { display: flex; width: 168px; }
+.rf-form .rf-stepper input {
+  border-radius: 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 20px;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.rf-stepper input::-webkit-inner-spin-button,
+.rf-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.rf-step-btn {
+  flex: 0 0 50px;
+  min-height: 50px;
+  border: 1px solid rgba(242, 193, 91, 0.45);
+  background: rgba(242, 193, 91, 0.16);
+  color: var(--gold-light);
+  font: 700 24px var(--font-latin);
+  cursor: pointer;
+  touch-action: manipulation; /* fast taps never zoom the page on iOS */
+}
+.rf-step-btn:first-child { border-radius: 14px 0 0 14px; border-right: 0; }
+.rf-step-btn:last-child { border-radius: 0 14px 14px 0; border-left: 0; }
+.rf-step-btn:active { background: rgba(242, 193, 91, 0.32); }
+.rf-step-btn:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 2px; }
+.rf-total { margin: 0; color: var(--gold-light); font-weight: 700; font-size: 17px; }
 
 /* bloc chips */
 .rf-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
