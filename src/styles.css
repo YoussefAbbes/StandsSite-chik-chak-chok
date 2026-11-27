@@ -1056,6 +1056,34 @@ body.reserve-open { overflow: hidden; }
 }
 .rf-phones { display: grid; gap: 8px; }
 
+/* "Il manque…": inside the pinned bar, so it is on screen when Réserver is tapped */
+.rf-summary {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 180, 168, 0.6);
+  background: rgba(90, 6, 8, 0.96);
+  color: var(--cream);
+  animation: rf-shake 0.35s ease-out;
+}
+.rf-summary[hidden] { display: none; }
+.rf-summary-title { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: #ffb4a8; }
+.rf-summary ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.rf-summary-item {
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 180, 168, 0.7);
+  background: rgba(255, 180, 168, 0.12);
+  color: var(--cream);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.rf-summary-item:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 2px; }
+@keyframes rf-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) { .rf-summary { animation: none; } }
+
 /* success */
 .rf-done { display: grid; justify-items: center; gap: 12px; text-align: center; padding: 8px 0 28px; }
 .rf-halo {

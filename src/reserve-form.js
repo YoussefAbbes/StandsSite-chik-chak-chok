@@ -14,6 +14,22 @@ export const DEFAULT_TIMEOUT_MS = 30000;
 
 const text = (v) => (typeof v === 'string' ? v.trim() : '');
 
+/** one name part: 2+ letters (any alphabet, Arabic included), inner ' or - allowed: "M'rad", "Ben-Ali" */
+const NAME_WORD = /^\p{L}[\p{L}'’-]*\p{L}$/u;
+/** "Hh", "Hhh": the same letter repeated is not a name */
+const SAME_LETTER = /^(\p{L})\1+$/iu;
+/** first name + last name, both real words */
+export function isFullName(name) {
+  const words = name.split(' ');
+  return name.length <= 60 && words.length >= 2 && words.every((w) => NAME_WORD.test(w) && !SAME_LETTER.test(w));
+}
+
+/** Tunisian numbers start with 2/4/5/9 (mobile), 3 or 7 (fixed/VoIP); 0, 1, 6, 8 are not personal lines.
+ *  "88888888" / "22222222" are someone typing to get past the form. */
+export function isRealTunisianNumber(digits) {
+  return /^[234579]\d{7}$/.test(digits) && !/^(\d)\1{7}$/.test(digits);
+}
+
 /**
  * @returns {{ ok: boolean, errors: Record<string,string>, data?: object }}
  * errors are French messages keyed by field name.
@@ -27,10 +43,12 @@ export function validateReservation(values, { today, lastDay, blocs }) {
   const day = text(values.day);
   const time = text(values.time);
 
-  if (name.length < 2 || name.length > 60) errors.name = 'Écris ton nom et prénom.';
-  if (!phone) errors.phone = 'Numéro à 8 chiffres, ex. 25 615 375.';
-  if (!bloc) errors.bloc = 'Choisis ton bloc.';
-  else if (bloc.rooms.length ? !bloc.rooms.includes(text(values.salle)) : !ROOM.test(rawSalle)) {
+  if (!isFullName(name)) errors.name = 'Écris ton prénom et ton nom (ex. Amina Sehimi).';
+  if (!phone || !isRealTunisianNumber(phone.tel.replace('tel:+216', ''))) errors.phone = 'Numéro tunisien à 8 chiffres, ex. 25 615 375.';
+  if (!bloc) {
+    errors.bloc = 'Choisis ton bloc.';
+    errors.salle = 'Choisis ton bloc, puis l’étage et la salle.';
+  } else if (bloc.rooms.length ? !bloc.rooms.includes(text(values.salle)) : !ROOM.test(rawSalle)) {
     errors.salle = bloc.rooms.length || !rawSalle ? 'Choisis l’étage et la salle.' : 'Salle au format C 1-1 (bloc étage-salle).';
   }
   // ISO dates compare correctly as strings

@@ -260,3 +260,73 @@ describe('shouldAutoOpen', () => {
     expect(shouldAutoOpen({ hash: '' })).toBe(false);
   });
 });
+
+describe('on-screen summary of what is missing (phones: inline errors are off-screen)', () => {
+  const open = (submit = vi.fn(() => Promise.resolve({ ok: true }))) =>
+    ({ submit, sheet: openReserveSheet(reservation, { phones, today: '2026-11-26', submit }) });
+  const summary = () => $('.reserve-sheet .rf-summary');
+
+  it('empty form → summary next to the button lists every missing field, nothing sent', async () => {
+    const { submit } = open();
+    submitBtn().click();
+    await flush();
+    expect(submit).not.toHaveBeenCalled();
+    expect(summary().hidden).toBe(false);
+    expect(summary().getAttribute('role')).toBe('alert');
+    expect(summary().textContent).toContain('Il manque ou il faut corriger');
+    for (const label of ['Nom et prénom', 'Téléphone', 'Bloc', 'Salle', 'Jour', 'Heure', 'Paiement']) {
+      expect(summary().textContent).toContain(label);
+    }
+    // inside the bar pinned to the bottom, right above the button, where the thumb is
+    expect(summary().parentElement).toBe($('.reserve-sheet .rf-actions'));
+    expect(summary().nextElementSibling).toBe(submitBtn());
+  });
+
+  it('only the wrong fields are listed', async () => {
+    const { submit } = open();
+    fill();
+    const name = $('.reserve-sheet [name="name"]');
+    name.value = 'Hh';
+    submitBtn().click();
+    await flush();
+    expect(submit).not.toHaveBeenCalled();
+    expect(summary().textContent).toContain('Nom et prénom');
+    expect(summary().textContent).not.toContain('Téléphone');
+  });
+
+  it('a tap on a listed field jumps to it', async () => {
+    open();
+    submitBtn().click();
+    await flush();
+    const link = [...summary().querySelectorAll('button')].find((b) => b.textContent.includes('Téléphone'));
+    link.click();
+    expect(document.activeElement).toBe($('.reserve-sheet [name="phone"]'));
+  });
+
+  it('summary disappears once the form is valid and sent', async () => {
+    const { submit } = open();
+    submitBtn().click();
+    await flush();
+    fill();
+    submitBtn().click();
+    await flush();
+    expect(submit).toHaveBeenCalledOnce();
+    expect(summary()?.hidden ?? true).toBe(true);
+  });
+});
+
+describe('iPhone: a wrong field never grabs the cursor on submit', () => {
+  it('short phone → no focus on the phone input (iOS would open keyboard + AutoFill and hide the message)', async () => {
+    const submit = vi.fn(() => Promise.resolve({ ok: true }));
+    openReserveSheet(reservation, { phones, today: '2026-11-26', submit });
+    fill();
+    const phone = $('.reserve-sheet [name="phone"]');
+    phone.value = '2564';
+    phone.blur();
+    submitBtn().click();
+    await flush();
+    expect(submit).not.toHaveBeenCalled();
+    expect(document.activeElement).not.toBe(phone);
+    expect($('.reserve-sheet .rf-summary').textContent).toContain('Téléphone');
+  });
+});

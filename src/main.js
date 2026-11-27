@@ -41,16 +41,17 @@ function revealCards() {
 const silhouette = { url: `${import.meta.env.BASE_URL}assets/silhouette.webp`, meta: silhouetteMeta };
 let openForm = null;
 
-/** Local review only (stripped from the GitHub build): with no script link yet, fake the
- *  Google answer. ?reserveStub=duplicate or ?reserveStub=network shows the other screens. */
+/** Local review only (stripped from the GitHub build): fake the Google answer so testing on
+ *  localhost never writes to the real Sheet. ?reserveStub=duplicate or ?reserveStub=network
+ *  shows the other screens; ?reserveStub=live really sends. */
 function devStub(reservation) {
-  if (!import.meta.env.DEV || reservation) return { reservation, submit: undefined };
+  const mode = import.meta.env.DEV ? new URLSearchParams(location.search).get('reserveStub') || 'ok' : 'live';
+  if (mode === 'live') return { reservation, submit: undefined };
   const raw = bundled.reservation;
-  const mode = new URLSearchParams(location.search).get('reserveStub') || 'ok';
   const reply = mode === 'ok' ? { ok: true } : { ok: false, error: mode };
   return {
-    reservation: { endpoint: 'stub', lastDay: raw.lastDay, blocs: raw.blocs.map((b) => ({ bloc: b.bloc, rooms: b.rooms ?? [] })) },
-    submit: () => new Promise((r) => setTimeout(() => r(reply), 700)),
+    reservation: reservation ?? { endpoint: 'stub', lastDay: raw.lastDay, blocs: raw.blocs.map((b) => ({ bloc: b.bloc, rooms: b.rooms ?? [] })) },
+    submit: (data) => new Promise((r) => setTimeout(() => { console.info('[dev] would send', data); r(reply); }, 700)),
   };
 }
 

@@ -100,3 +100,22 @@ describe('timeout', () => {
     expect(DEFAULT_TIMEOUT_MS).toBe(30000);
   });
 });
+
+describe('stricter checks (rows like "Hh" / 88888888 reached the Sheet)', () => {
+  it('name needs a first name AND a last name, real letters', () => {
+    for (const bad of ['Mohamed', 'Hh', 'Hhh', 'Hh Hh', 'A B', 'Amina 123', 'Amina S', '!! ??']) {
+      expect(errs({ name: bad }).name, bad).toBe('Écris ton prénom et ton nom (ex. Amina Sehimi).');
+    }
+    for (const ok of ['Amina sehimi', 'Amira Ben Salah', "Mohamed Ben M'rad", 'Lina Ben-Ali', 'Éloïse Trabelsi', 'محمد علي']) {
+      expect(errs({ name: ok }).name, ok).toBeUndefined();
+    }
+  });
+  it('phone must be a real Tunisian number (prefix 2/3/4/5/7/9, not the same digit 8 times)', () => {
+    for (const bad of ['88888888', '12345678', '01234567', '61234567', '22222222', '99999999']) {
+      expect(errs({ phone: bad }).phone, bad).toBe('Numéro tunisien à 8 chiffres, ex. 25 615 375.');
+    }
+    for (const ok of ['52563987', '95195124', '25642354', '41234567', '71234567', '31234567']) {
+      expect(errs({ phone: ok }).phone, ok).toBeUndefined();
+    }
+  });
+});

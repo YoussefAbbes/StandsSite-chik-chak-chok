@@ -29,6 +29,12 @@ const COPY = {
   duplicate: "Tu as déjà une réservation avec ce numéro. Contacte l'équipe si tu veux la modifier.",
   network: "Oups, la réservation n'est pas passée. Réessaie, ou appelle l'équipe :",
   invalid: "Ta réservation n'a pas pu être enregistrée. Appelle l'équipe :",
+  missing: 'Il manque ou il faut corriger :',
+};
+
+/** field → name shown in the "il manque" list, in form order */
+const LABELS = {
+  name: 'Nom et prénom', phone: 'Téléphone', bloc: 'Bloc', salle: 'Salle', day: 'Jour', time: 'Heure', pay: 'Paiement (case à cocher)',
 };
 
 /** Local date as YYYY-MM-DD (not UTC: late-evening students must not get tomorrow's date). */
@@ -117,6 +123,8 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
 
   const submitBtn = el('button', { type: 'submit', class: 'btn btn-reserve rf-submit' }, [icon('ticket'), el('span', { text: COPY.submit })]);
   const status = el('div', { class: 'rf-status', role: 'status', 'aria-live': 'polite' });
+  // right above the button: on a phone the inline errors are scrolled away, this is what the student sees
+  const summary = el('div', { class: 'rf-summary', role: 'alert', hidden: true });
   const form = el('form', { class: 'rf-form', novalidate: true }, [
     step(1, 'Toi', [
       field('name', 'Nom et prénom', el('input', {
@@ -154,7 +162,7 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
     // honeypot: invisible to people, bots fill it in
     el('div', { class: 'rf-hp', 'aria-hidden': 'true' }, [el('input', { name: 'website', type: 'text', tabindex: '-1', autocomplete: 'off' })]),
     status,
-    el('div', { class: 'rf-actions' }, [submitBtn]),
+    el('div', { class: 'rf-actions' }, [summary, submitBtn]),
   ]);
 
   const body = el('div', { class: 'rf-body' }, [el('p', { class: 'rf-intro', text: COPY.intro }), form]);
@@ -201,13 +209,33 @@ export function openReserveSheet(reservation, { phones = [], today = localIsoDat
     website: form.elements.website.value,
   });
 
+  /** the control to put the cursor in for each field (salle is a list or étage + numéro) */
+  const controlFor = (name) => ({
+    bloc: () => chips.querySelector('input'),
+    salle: () => form.elements.salle ?? form.elements.etage,
+  }[name]?.() ?? form.querySelector(`[name="${name}"]`));
+
+  function goTo(name) {
+    form.querySelector(`[data-field="${name}"]`)?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+    controlFor(name)?.focus?.({ preventScroll: true });
+  }
+
   function showErrors(errors) {
     for (const p of form.querySelectorAll('[data-error-for]')) p.textContent = errors[p.dataset.errorFor] ?? '';
     for (const f of form.querySelectorAll('[data-field]')) f.classList.toggle('has-error', Boolean(errors[f.dataset.field]));
-    const first = Object.keys(errors)[0];
-    if (!first) return;
-    form.querySelector(`[name="${first}"]`)?.focus?.() ?? (first === 'salle' && form.elements.etage?.focus?.());
-    form.querySelector(`[data-field="${first}"]`)?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+    const wrong = Object.keys(LABELS).filter((name) => errors[name]);
+    summary.hidden = wrong.length === 0;
+    if (summary.hidden) return summary.replaceChildren();
+    // no automatic jump: on a phone it opens the keyboard or the date wheel and hides this list
+    summary.replaceChildren(
+      el('p', { class: 'rf-summary-title', text: COPY.missing }),
+      el('ul', {}, wrong.map((name) => {
+        const btn = el('button', { type: 'button', class: 'rf-summary-item', text: LABELS[name] });
+        btn.addEventListener('click', () => goTo(name));
+        return el('li', {}, [btn]);
+      })),
+    );
+    summary.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
   }
 
   function setSending(on) {
